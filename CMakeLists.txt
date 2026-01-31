@@ -8,6 +8,15 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 
 add_executable(${PROJECT_NAME} main.cpp)
 
+# Settings for SFML
+set(SFML_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
+set(SFML_BUILD_TESTS OFF CACHE BOOL "" FORCE)
+set(SMFL_STATIC_LIBRARIES ON CACHE BOOL "" FORCE)
+
+add_subdirectory(vendor/SFML)
+
+target_link_libraries(${PROJECT_NAME} PUBLIC SFML::Graphics)
+
 if(MSVC)
   target_compile_options(${PROJECT_NAME} PRIVATE /W4 /WX)
 else()
