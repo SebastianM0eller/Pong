@@ -11,9 +11,15 @@ add_executable(${PROJECT_NAME} main.cpp)
 # Settings for SFML
 set(SFML_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
 set(SFML_BUILD_TESTS OFF CACHE BOOL "" FORCE)
-set(SMFL_STATIC_LIBRARIES ON CACHE BOOL "" FORCE)
+set(SFML_STATIC_LIBRARIES ON CACHE BOOL "" FORCE)
 
 add_subdirectory(vendor/SFML)
+
+target_include_directories(${PROJECT_NAME} PUBLIC include)
+
+target_sources(${PROJECT_NAME} PRIVATE
+  source/Game.cpp
+)
 
 target_link_libraries(${PROJECT_NAME} PUBLIC SFML::Graphics)
 
