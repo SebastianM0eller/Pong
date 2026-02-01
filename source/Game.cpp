@@ -1,14 +1,18 @@
 #include "Game.h"
+#include "SFML/Graphics/Color.hpp"
+#include "SFML/System/Vector2.hpp"
 #include <optional>
 
 Game::Game()
 {
     InitWindow({});
+    InitEntities();
 }
 
 Game::Game(const GameConfig &config)
 {
     InitWindow(config);
+    InitEntities();
 }
 
 Game::~Game()
@@ -29,6 +33,28 @@ void Game::InitWindow(const GameConfig &config)
     }
 }
 
+void Game::InitEntities()
+{
+    sf::Vector2f windowSize{m_Window.getSize()};
+    float playerWidth = 20;
+    float playerHeight = 80;
+    float normalClearance = 0.05;
+    float ballRadius = 10;
+    sf::Vector2f ballSize{ballRadius * 2, ballRadius * 2};
+
+    m_Player1.setOutlineColor(sf::Color::White);
+    m_Player1.setSize({playerWidth, playerHeight});
+    m_Player1.setPosition(NormalDeviceToRegular(windowSize, m_Player1.getSize(), {normalClearance, 0.5}));
+
+    m_Player2.setOutlineColor(sf::Color::White);
+    m_Player2.setSize({playerWidth, playerHeight});
+    m_Player2.setPosition(NormalDeviceToRegular(windowSize, m_Player2.getSize(), {1 - normalClearance, 0.5}));
+
+    m_Ball.setOutlineColor(sf::Color::White);
+    m_Ball.setRadius(ballRadius);
+    m_Ball.setPosition(NormalDeviceToRegular(windowSize, ballSize, {0.5, 0.5}));
+}
+
 void Game::Shutdown()
 {
     m_Window.close();
@@ -41,9 +67,10 @@ void Game::Run()
     while (m_IsRunning)
     {
         HandleEvents();
+        HandleRendering();
         m_Window.display();
     }
-}
+};
 
 void Game::HandleEvents()
 {
@@ -54,4 +81,20 @@ void Game::HandleEvents()
             m_IsRunning = false;
         }
     }
+}
+
+void Game::HandleRendering()
+{
+    m_Window.clear(sf::Color::Black);
+    m_Window.draw(m_Player1);
+    m_Window.draw(m_Player2);
+    m_Window.draw(m_Ball);
+    m_Window.display();
+}
+
+sf::Vector2f Game::NormalDeviceToRegular(sf::Vector2f windowSize, sf::Vector2f entitySize, sf::Vector2f location)
+{
+    sf::Vector2f result{windowSize.x * location.x, windowSize.y * location.y};
+    result -= entitySize / 2.0f;
+    return result;
 }
