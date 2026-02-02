@@ -33,6 +33,6 @@ class ScoreSystem
     ScoreSystem() = default;
     ~ScoreSystem() = default;
 
-    static int m_PlayerOneScore;
-    static int m_PlayerTwoScore;
+    static inline int m_PlayerOneScore;
+    static inline int m_PlayerTwoScore;
 };

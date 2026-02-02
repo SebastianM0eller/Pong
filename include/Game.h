@@ -1,5 +1,4 @@
 #pragma once
-#include "SFML/Graphics/CircleShape.hpp"
 #include "SFML/Graphics/RectangleShape.hpp"
 #include "SFML/System/Vector2.hpp"
 #include <SFML/Graphics.hpp>
@@ -11,7 +10,7 @@ struct GameConfig
     uint16_t width{800};
     uint16_t height{600};
     uint16_t framerate{60};
-    bool vsync{false};
+    bool vsync{true};
 };
 
 class Game
@@ -27,7 +26,8 @@ class Game
     sf::RenderWindow m_Window;
     sf::RectangleShape m_Player1;
     sf::RectangleShape m_Player2;
-    sf::CircleShape m_Ball;
+    sf::RectangleShape m_Ball;
+    sf::Vector2f m_BallSpeed{0, 0};
 
     bool m_IsRunning{false};
 
@@ -36,6 +36,8 @@ class Game
     void Shutdown();
     void HandleEvents();
     void HandleRendering();
+    void HandleMovement(float deltaTime);
+    void HandleBallCollision(const sf::RectangleShape &other);
 
     sf::Vector2f NormalDeviceToRegular(sf::Vector2f windowSize, sf::Vector2f entitySize, sf::Vector2f location);
 };
