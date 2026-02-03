@@ -1,6 +1,7 @@
 #include "Game.h"
 #include "SFML/Graphics/Color.hpp"
 #include "SFML/System/Vector2.hpp"
+#include "SFML/Window/Keyboard.hpp"
 #include "Score.h"
 #include <optional>
 
@@ -70,8 +71,9 @@ void Game::Run()
 
     while (m_IsRunning)
     {
+        float deltaTime = deltaTimer.restart().asSeconds();
         HandleEvents();
-        HandleMovement(deltaTimer.restart().asSeconds());
+        HandleMovement(deltaTime);
         HandleRendering();
         m_Window.display();
     }
@@ -108,6 +110,23 @@ void Game::HandleMovement(float deltaTime)
         m_BallSpeed.y *= -1;
 
     m_Ball.move(m_BallSpeed * deltaTime);
+
+    constexpr sf::Keyboard::Key P1MoveUp = sf::Keyboard::Key::W;
+    constexpr sf::Keyboard::Key P1MoveDown = sf::Keyboard::Key::S;
+    constexpr sf::Keyboard::Key P2MoveUp = sf::Keyboard::Key::I;
+    constexpr sf::Keyboard::Key P2MoveDown = sf::Keyboard::Key::K;
+
+    float VerticalSpeedMultiplier{0.5};
+
+    if (sf::Keyboard::isKeyPressed(P1MoveDown))
+        m_Player1.move({0, static_cast<float>(m_Window.getSize().y) * deltaTime * VerticalSpeedMultiplier});
+    if (sf::Keyboard::isKeyPressed(P1MoveUp))
+        m_Player1.move({0, -static_cast<float>(m_Window.getSize().y * deltaTime * VerticalSpeedMultiplier)});
+
+    if (sf::Keyboard::isKeyPressed(P2MoveDown))
+        m_Player2.move({0, static_cast<float>(m_Window.getSize().y * deltaTime * VerticalSpeedMultiplier)});
+    if (sf::Keyboard::isKeyPressed(P2MoveUp))
+        m_Player2.move({0, -static_cast<float>(m_Window.getSize().y * deltaTime * VerticalSpeedMultiplier)});
 }
 
 void Game::HandleBallCollision(const sf::RectangleShape &other)
