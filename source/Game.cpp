@@ -55,7 +55,7 @@ void Game::InitEntities()
     m_Ball.setOutlineColor(sf::Color::White);
     m_Ball.setSize(ballSize);
     m_Ball.setPosition(NormalDeviceToRegular(windowSize, ballSize, {0.5, 0.5}));
-    m_BallSpeed.x = windowSize.x / 4.0f;
+    m_BallSpeed.x = windowSize.x / 2.0f;
 }
 
 void Game::Shutdown()
