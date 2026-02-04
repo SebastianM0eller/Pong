@@ -2,6 +2,7 @@
 #include "SFML/Graphics/Color.hpp"
 #include "SFML/System/Vector2.hpp"
 #include "SFML/Window/Keyboard.hpp"
+#include "SFML/Window/WindowEnums.hpp"
 #include "Score.h"
 #include <optional>
 
@@ -9,6 +10,7 @@ Game::Game()
 {
     InitWindow({});
     InitEntities();
+    ScoreSystem::Initialize();
 }
 
 Game::Game(const GameConfig &config)
@@ -25,7 +27,33 @@ Game::~Game()
 
 void Game::InitWindow(const GameConfig &config)
 {
-    m_Window.create(sf::VideoMode({config.width, config.height}), config.WindowName);
+    sf::VideoMode desktop = sf::VideoMode::getDesktopMode();
+    m_Window.create(desktop, config.WindowName, sf::State::Fullscreen);
+
+    sf::View view(sf::FloatRect({0, 0}, {(float)config.width, (float)config.height}));
+
+    float screenRatio = static_cast<float>(m_Window.getSize().x) / static_cast<float>(m_Window.getSize().y);
+    float gameRatio = static_cast<float>(config.width) / static_cast<float>(config.height);
+
+    std::cout << "SR = " << screenRatio << " and GR = " << gameRatio;
+
+    if (screenRatio >= gameRatio)
+    {
+        float width = gameRatio / screenRatio;
+
+        view.setViewport(sf::FloatRect({(1.f - width) / 2.f, 0.f}, {width, 1.f}));
+        std::cout << " screen>game";
+    }
+    else
+    {
+        float height = screenRatio / gameRatio;
+
+        view.setViewport(sf::FloatRect({0.f, (1.f - height) / 2.f}, {1.f, height}));
+        std::cout << " screen<game ";
+    }
+
+    m_Window.setView(view);
+
     if (config.vsync)
     {
         m_Window.setVerticalSyncEnabled(true);
@@ -38,7 +66,7 @@ void Game::InitWindow(const GameConfig &config)
 
 void Game::InitEntities()
 {
-    sf::Vector2f windowSize{m_Window.getSize()};
+    sf::Vector2f windowSize{m_Window.getView().getSize()};
     float playerWidth = 20;
     float playerHeight = 80;
     float normalClearance = 0.05;
@@ -48,6 +76,7 @@ void Game::InitEntities()
     m_Player1.setOutlineColor(sf::Color::White);
     m_Player1.setSize({playerWidth, playerHeight});
     m_Player1.setPosition(NormalDeviceToRegular(windowSize, m_Player1.getSize(), {normalClearance, 0.5}));
+    m_Player1.setOutlineThickness(1.0f);
 
     m_Player2.setOutlineColor(sf::Color::White);
     m_Player2.setSize({playerWidth, playerHeight});
@@ -75,7 +104,6 @@ void Game::Run()
         HandleEvents();
         HandleMovement(deltaTime);
         HandleRendering();
-        m_Window.display();
     }
 };
 
@@ -104,10 +132,18 @@ void Game::HandleMovement(float deltaTime)
     HandleBallCollision(m_Player1);
     HandleBallCollision(m_Player2);
 
-    if (m_Ball.getPosition().y < 0)
+    if (m_Ball.getPosition().y < 0 && m_BallSpeed.y < 0)
+    {
         m_BallSpeed.y *= -1;
-    if (m_Ball.getPosition().y > m_Window.getSize().y)
+        std::cout << "Hit buttom";
+    }
+    if (m_Ball.getPosition().y + m_Ball.getSize().y > m_Window.getView().getSize().y && m_BallSpeed.y > 0)
+    {
         m_BallSpeed.y *= -1;
+        std::cout << "Hit buttom" << "\n";
+        std::cout << m_Ball.getPosition().y << "\n";
+        std::cout << m_Window.getSize().y << "\n";
+    }
 
     m_Ball.move(m_BallSpeed * deltaTime);
 
@@ -136,9 +172,13 @@ void Game::HandleBallCollision(const sf::RectangleShape &other)
         m_BallSpeed.x *= -1;
 
         m_BallSpeed.y =
-            ((((m_Ball.getPosition().y + m_Ball.getSize().y / 2) - (other.getPosition().y + other.getSize().y / 2)) /
-              (other.getSize().y / 2)) *
-             m_BallSpeed.x);
+            (((m_Ball.getPosition().y + m_Ball.getSize().y / 2) - (other.getPosition().y + other.getSize().y / 2)) /
+             (other.getSize().y / 2)) *
+            m_BallSpeed.x;
+
+        // Correct the direction, in case the ball speed is negative
+        if (m_BallSpeed.x < 0)
+            m_BallSpeed.y *= -1;
     }
 }
 
