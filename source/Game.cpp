@@ -4,6 +4,7 @@
 #include "SFML/Window/Keyboard.hpp"
 #include "SFML/Window/WindowEnums.hpp"
 #include "Score.h"
+#include <format>
 #include <optional>
 
 Game::Game()
@@ -11,6 +12,11 @@ Game::Game()
     InitWindow({});
     InitEntities();
     ScoreSystem::Initialize();
+
+    if (!m_Font.openFromFile("assets/font/GameFont.ttf"))
+    {
+        std::cerr << "Failed to load the font" << std::endl;
+    }
 }
 
 Game::Game(const GameConfig &config)
@@ -19,7 +25,7 @@ Game::Game(const GameConfig &config)
     InitEntities();
     ScoreSystem::Initialize();
 
-    if (!m_Font.openFromFile("assets/font/PlaywriteNZBasicGuides-Regular.ttf"))
+    if (!m_Font.openFromFile("assets/font/GameFont.ttf"))
     {
         std::cerr << "Failed to load the font" << std::endl;
     }
@@ -206,8 +212,17 @@ void Game::ResetBall()
 
 void Game::DrawScore()
 {
-    // int Score1 = ScoreSystem::GetScore(1);
-    // int Score2 = ScoreSystem::GetScore(2);
+    int Score1 = ScoreSystem::GetScore(1);
+    int Score2 = ScoreSystem::GetScore(2);
+
+    sf::Text text(m_Font, std::format("{} | {}", Score1, Score2), 30);
+    text.setFillColor(sf::Color::White);
+
+    sf::FloatRect textArea = text.getLocalBounds();
+    text.setOrigin({textArea.size.x / 2.0f, textArea.size.y / 2.0f});
+    text.setPosition({m_Window.getView().getSize().x / 2.0f, 40});
+
+    m_Window.draw(text);
 }
 
 sf::Vector2f Game::NormalDeviceToRegular(sf::Vector2f windowSize, sf::Vector2f entitySize, sf::Vector2f location)
