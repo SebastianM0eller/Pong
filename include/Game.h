@@ -38,6 +38,8 @@ class Game
     void HandleRendering();
     void HandleMovement(float deltaTime);
     void HandleBallCollision(const sf::RectangleShape &other);
+    void HandleBallPoints();
+    void ResetBall();
 
     sf::Vector2f NormalDeviceToRegular(sf::Vector2f windowSize, sf::Vector2f entitySize, sf::Vector2f location);
 };

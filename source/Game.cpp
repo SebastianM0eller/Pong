@@ -35,21 +35,17 @@ void Game::InitWindow(const GameConfig &config)
     float screenRatio = static_cast<float>(m_Window.getSize().x) / static_cast<float>(m_Window.getSize().y);
     float gameRatio = static_cast<float>(config.width) / static_cast<float>(config.height);
 
-    std::cout << "SR = " << screenRatio << " and GR = " << gameRatio;
-
     if (screenRatio >= gameRatio)
     {
         float width = gameRatio / screenRatio;
 
         view.setViewport(sf::FloatRect({(1.f - width) / 2.f, 0.f}, {width, 1.f}));
-        std::cout << " screen>game";
     }
     else
     {
         float height = screenRatio / gameRatio;
 
         view.setViewport(sf::FloatRect({0.f, (1.f - height) / 2.f}, {1.f, height}));
-        std::cout << " screen<game ";
     }
 
     m_Window.setView(view);
@@ -84,6 +80,7 @@ void Game::InitEntities()
 
     m_Ball.setOutlineColor(sf::Color::White);
     m_Ball.setSize(ballSize);
+
     m_Ball.setPosition(NormalDeviceToRegular(windowSize, ballSize, {0.5, 0.5}));
     m_BallSpeed.x = windowSize.x / 2.0f;
 }
@@ -103,6 +100,7 @@ void Game::Run()
         float deltaTime = deltaTimer.restart().asSeconds();
         HandleEvents();
         HandleMovement(deltaTime);
+        HandleBallPoints();
         HandleRendering();
     }
 };
@@ -135,14 +133,10 @@ void Game::HandleMovement(float deltaTime)
     if (m_Ball.getPosition().y < 0 && m_BallSpeed.y < 0)
     {
         m_BallSpeed.y *= -1;
-        std::cout << "Hit buttom";
     }
     if (m_Ball.getPosition().y + m_Ball.getSize().y > m_Window.getView().getSize().y && m_BallSpeed.y > 0)
     {
         m_BallSpeed.y *= -1;
-        std::cout << "Hit buttom" << "\n";
-        std::cout << m_Ball.getPosition().y << "\n";
-        std::cout << m_Window.getSize().y << "\n";
     }
 
     m_Ball.move(m_BallSpeed * deltaTime);
@@ -180,6 +174,28 @@ void Game::HandleBallCollision(const sf::RectangleShape &other)
         if (m_BallSpeed.x < 0)
             m_BallSpeed.y *= -1;
     }
+}
+
+void Game::HandleBallPoints()
+{
+    if (m_Ball.getPosition().x < 0)
+    {
+        ScoreSystem::AddScore(2);
+        ResetBall();
+    }
+
+    if (m_Ball.getPosition().x > m_Window.getView().getSize().x)
+    {
+        ScoreSystem::AddScore(1);
+        ResetBall();
+    }
+}
+
+void Game::ResetBall()
+{
+    m_Ball.setPosition(NormalDeviceToRegular(m_Window.getView().getSize(), m_Ball.getSize(), {0.5, 0.5}));
+    m_BallSpeed.x *= -1;
+    m_BallSpeed.y *= 0.5;
 }
 
 sf::Vector2f Game::NormalDeviceToRegular(sf::Vector2f windowSize, sf::Vector2f entitySize, sf::Vector2f location)
