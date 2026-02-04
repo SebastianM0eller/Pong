@@ -28,6 +28,7 @@ class Game
     sf::RectangleShape m_Player2;
     sf::RectangleShape m_Ball;
     sf::Vector2f m_BallSpeed{0, 0};
+    sf::Font m_Font;
 
     bool m_IsRunning{false};
 
@@ -40,6 +41,7 @@ class Game
     void HandleBallCollision(const sf::RectangleShape &other);
     void HandleBallPoints();
     void ResetBall();
+    void DrawScore();
 
     sf::Vector2f NormalDeviceToRegular(sf::Vector2f windowSize, sf::Vector2f entitySize, sf::Vector2f location);
 };

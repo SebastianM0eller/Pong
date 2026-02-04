@@ -18,6 +18,11 @@ Game::Game(const GameConfig &config)
     InitWindow(config);
     InitEntities();
     ScoreSystem::Initialize();
+
+    if (!m_Font.openFromFile("assets/font/PlaywriteNZBasicGuides-Regular.ttf"))
+    {
+        std::cerr << "Failed to load the font" << std::endl;
+    }
 }
 
 Game::~Game()
@@ -122,6 +127,7 @@ void Game::HandleRendering()
     m_Window.draw(m_Player1);
     m_Window.draw(m_Player2);
     m_Window.draw(m_Ball);
+    DrawScore();
     m_Window.display();
 }
 
@@ -196,6 +202,12 @@ void Game::ResetBall()
     m_Ball.setPosition(NormalDeviceToRegular(m_Window.getView().getSize(), m_Ball.getSize(), {0.5, 0.5}));
     m_BallSpeed.x *= -1;
     m_BallSpeed.y *= 0.5;
+}
+
+void Game::DrawScore()
+{
+    // int Score1 = ScoreSystem::GetScore(1);
+    // int Score2 = ScoreSystem::GetScore(2);
 }
 
 sf::Vector2f Game::NormalDeviceToRegular(sf::Vector2f windowSize, sf::Vector2f entitySize, sf::Vector2f location)
