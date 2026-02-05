@@ -1,8 +1,6 @@
 #pragma once
-#include "SFML/Graphics/RectangleShape.hpp"
-#include "SFML/System/Vector2.hpp"
-#include <SFML/Graphics.hpp>
-#include <cstdint>
+#include "Ball.h"
+#include "Players.h"
 
 struct GameConfig
 {
@@ -24,11 +22,11 @@ class Game
 
   private:
     sf::RenderWindow m_Window;
-    sf::RectangleShape m_Player1;
-    sf::RectangleShape m_Player2;
-    sf::RectangleShape m_Ball;
-    sf::Vector2f m_BallSpeed{0, 0};
     sf::Font m_Font;
+
+    Player m_Player1;
+    Player m_Player2;
+    Ball m_Ball;
 
     bool m_IsRunning{false};
 
@@ -38,10 +36,6 @@ class Game
     void HandleEvents();
     void HandleRendering();
     void HandleMovement(float deltaTime);
-    void HandleBallCollision(const sf::RectangleShape &other);
     void HandleBallPoints();
-    void ResetBall();
     void DrawScore();
-
-    sf::Vector2f NormalDeviceToRegular(sf::Vector2f windowSize, sf::Vector2f entitySize, sf::Vector2f location);
 };

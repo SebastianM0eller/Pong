@@ -18,8 +18,9 @@ add_subdirectory(vendor/SFML)
 target_include_directories(${PROJECT_NAME} PUBLIC include)
 
 target_sources(${PROJECT_NAME} PRIVATE
-  source/Game.cpp,
+  source/Game.cpp
   source/Players.cpp
+  source/Ball.cpp
 )
 
 target_link_libraries(${PROJECT_NAME} PUBLIC SFML::Graphics)

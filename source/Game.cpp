@@ -74,26 +74,15 @@ void Game::InitWindow(const GameConfig &config)
 void Game::InitEntities()
 {
     sf::Vector2f windowSize{m_Window.getView().getSize()};
-    float playerWidth = 20;
-    float playerHeight = 80;
-    float normalClearance = 0.05;
-    float ballRadius = 10;
-    sf::Vector2f ballSize{ballRadius * 2, ballRadius * 2};
 
-    m_Player1.setOutlineColor(sf::Color::White);
-    m_Player1.setSize({playerWidth, playerHeight});
-    m_Player1.setPosition(NormalDeviceToRegular(windowSize, m_Player1.getSize(), {normalClearance, 0.5}));
-    m_Player1.setOutlineThickness(1.0f);
+    PlayerParams params;
+    params.viewportSize = windowSize;
+    m_Player1 = Player(params);
 
-    m_Player2.setOutlineColor(sf::Color::White);
-    m_Player2.setSize({playerWidth, playerHeight});
-    m_Player2.setPosition(NormalDeviceToRegular(windowSize, m_Player2.getSize(), {1 - normalClearance, 0.5}));
+    params.playerOne = false;
+    m_Player2 = Player(params);
 
-    m_Ball.setOutlineColor(sf::Color::White);
-    m_Ball.setSize(ballSize);
-
-    m_Ball.setPosition(NormalDeviceToRegular(windowSize, ballSize, {0.5, 0.5}));
-    m_BallSpeed.x = windowSize.x / 2.0f;
+    m_Ball = Ball{20, windowSize};
 }
 
 void Game::Shutdown()
@@ -139,53 +128,12 @@ void Game::HandleRendering()
 
 void Game::HandleMovement(float deltaTime)
 {
-    HandleBallCollision(m_Player1);
-    HandleBallCollision(m_Player2);
+    m_Ball.HandleCollision(m_Player1);
+    m_Ball.HandleCollision(m_Player2);
 
-    if (m_Ball.getPosition().y < 0 && m_BallSpeed.y < 0)
-    {
-        m_BallSpeed.y *= -1;
-    }
-    if (m_Ball.getPosition().y + m_Ball.getSize().y > m_Window.getView().getSize().y && m_BallSpeed.y > 0)
-    {
-        m_BallSpeed.y *= -1;
-    }
-
-    m_Ball.move(m_BallSpeed * deltaTime);
-
-    constexpr sf::Keyboard::Key P1MoveUp = sf::Keyboard::Key::W;
-    constexpr sf::Keyboard::Key P1MoveDown = sf::Keyboard::Key::S;
-    constexpr sf::Keyboard::Key P2MoveUp = sf::Keyboard::Key::I;
-    constexpr sf::Keyboard::Key P2MoveDown = sf::Keyboard::Key::K;
-
-    float VerticalSpeedMultiplier{0.5};
-
-    if (sf::Keyboard::isKeyPressed(P1MoveDown))
-        m_Player1.move({0, static_cast<float>(m_Window.getSize().y) * deltaTime * VerticalSpeedMultiplier});
-    if (sf::Keyboard::isKeyPressed(P1MoveUp))
-        m_Player1.move({0, -static_cast<float>(m_Window.getSize().y * deltaTime * VerticalSpeedMultiplier)});
-
-    if (sf::Keyboard::isKeyPressed(P2MoveDown))
-        m_Player2.move({0, static_cast<float>(m_Window.getSize().y * deltaTime * VerticalSpeedMultiplier)});
-    if (sf::Keyboard::isKeyPressed(P2MoveUp))
-        m_Player2.move({0, -static_cast<float>(m_Window.getSize().y * deltaTime * VerticalSpeedMultiplier)});
-}
-
-void Game::HandleBallCollision(const sf::RectangleShape &other)
-{
-    if (other.getGlobalBounds().findIntersection(m_Ball.getGlobalBounds()))
-    {
-        m_BallSpeed.x *= -1;
-
-        m_BallSpeed.y =
-            (((m_Ball.getPosition().y + m_Ball.getSize().y / 2) - (other.getPosition().y + other.getSize().y / 2)) /
-             (other.getSize().y / 2)) *
-            m_BallSpeed.x;
-
-        // Correct the direction, in case the ball speed is negative
-        if (m_BallSpeed.x < 0)
-            m_BallSpeed.y *= -1;
-    }
+    m_Ball.Move(deltaTime);
+    m_Player1.Move(deltaTime);
+    m_Player2.Move(deltaTime);
 }
 
 void Game::HandleBallPoints()
@@ -193,21 +141,14 @@ void Game::HandleBallPoints()
     if (m_Ball.getPosition().x < 0)
     {
         ScoreSystem::AddScore(2);
-        ResetBall();
+        m_Ball.Reset();
     }
 
     if (m_Ball.getPosition().x > m_Window.getView().getSize().x)
     {
         ScoreSystem::AddScore(1);
-        ResetBall();
+        m_Ball.Reset();
     }
-}
-
-void Game::ResetBall()
-{
-    m_Ball.setPosition(NormalDeviceToRegular(m_Window.getView().getSize(), m_Ball.getSize(), {0.5, 0.5}));
-    m_BallSpeed.x *= -1;
-    m_BallSpeed.y *= 0.5;
 }
 
 void Game::DrawScore()
@@ -223,11 +164,4 @@ void Game::DrawScore()
     text.setPosition({m_Window.getView().getSize().x / 2.0f, 40});
 
     m_Window.draw(text);
-}
-
-sf::Vector2f Game::NormalDeviceToRegular(sf::Vector2f windowSize, sf::Vector2f entitySize, sf::Vector2f location)
-{
-    sf::Vector2f result{windowSize.x * location.x, windowSize.y * location.y};
-    result -= entitySize / 2.0f;
-    return result;
 }
