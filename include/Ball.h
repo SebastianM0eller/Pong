@@ -1,6 +1,5 @@
 #pragma once
 #include "Players.h"
-#include <SFML/Graphics.hpp>
 
 class Ball : public sf::RectangleShape
 {
@@ -12,6 +11,7 @@ class Ball : public sf::RectangleShape
     void Move(float deltaTime);
     void Reset();
     void HandleCollision(const Player &other);
+    void HandleScore();
 
   private:
     sf::Vector2f m_Speed;

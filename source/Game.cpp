@@ -1,8 +1,4 @@
 #include "Game.h"
-#include "SFML/Graphics/Color.hpp"
-#include "SFML/System/Vector2.hpp"
-#include "SFML/Window/Keyboard.hpp"
-#include "SFML/Window/WindowEnums.hpp"
 #include "Score.h"
 #include <format>
 #include <optional>
@@ -100,7 +96,6 @@ void Game::Run()
         float deltaTime = deltaTimer.restart().asSeconds();
         HandleEvents();
         HandleMovement(deltaTime);
-        HandleBallPoints();
         HandleRendering();
     }
 };
@@ -134,21 +129,8 @@ void Game::HandleMovement(float deltaTime)
     m_Ball.Move(deltaTime);
     m_Player1.Move(deltaTime);
     m_Player2.Move(deltaTime);
-}
 
-void Game::HandleBallPoints()
-{
-    if (m_Ball.getPosition().x < 0)
-    {
-        ScoreSystem::AddScore(2);
-        m_Ball.Reset();
-    }
-
-    if (m_Ball.getPosition().x > m_Window.getView().getSize().x)
-    {
-        ScoreSystem::AddScore(1);
-        m_Ball.Reset();
-    }
+    m_Ball.HandleScore();
 }
 
 void Game::DrawScore()

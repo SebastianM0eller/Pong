@@ -1,4 +1,5 @@
 #include "Ball.h"
+#include "Score.h"
 #include <cstdlib>
 
 Ball::Ball(float size, sf ::Vector2f viewportSize)
@@ -42,5 +43,20 @@ void Ball::HandleCollision(const Player &other)
         this->m_Speed.x *= -1;
         this->m_Speed.y =
             (this->getPosition().y - other.getPosition().y) / other.getSize().y * std::abs(this->m_Speed.x);
+    }
+}
+
+void Ball::HandleScore()
+{
+    if (this->getPosition().x < 0)
+    {
+        ScoreSystem::AddScore(2);
+        this->Reset();
+    }
+
+    if (this->getPosition().x > m_ViewportSize.x)
+    {
+        ScoreSystem::AddScore(1);
+        this->Reset();
     }
 }
