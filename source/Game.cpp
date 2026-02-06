@@ -1,21 +1,19 @@
 #include "Game.h"
 #include "Score.h"
-#include <format>
 #include <optional>
 
 Game::Game()
 {
-    InitWindow({});
-    InitEntities();
-    ScoreSystem::Initialize();
-
-    if (!m_Font.openFromFile("assets/font/GameFont.ttf"))
-    {
-        std::cerr << "Failed to load the font" << std::endl;
-    }
+    GameConfig config;
+    Init(config);
 }
 
 Game::Game(const GameConfig &config)
+{
+    Init(config);
+}
+
+void Game::Init(const GameConfig &config)
 {
     InitWindow(config);
     InitEntities();
@@ -29,18 +27,16 @@ Game::Game(const GameConfig &config)
 
 Game::~Game()
 {
-    Shutdown();
+    m_Window.close();
 }
 
 void Game::InitWindow(const GameConfig &config)
 {
-    sf::VideoMode desktop = sf::VideoMode::getDesktopMode();
-    m_Window.create(desktop, config.WindowName, sf::State::Fullscreen);
+    m_Window.create(sf::VideoMode::getDesktopMode(), config.WindowName, sf::State::Fullscreen);
 
+    float screenRatio = (float)m_Window.getSize().x / m_Window.getSize().y;
+    float gameRatio = (float)config.width / config.height;
     sf::View view(sf::FloatRect({0, 0}, {(float)config.width, (float)config.height}));
-
-    float screenRatio = static_cast<float>(m_Window.getSize().x) / static_cast<float>(m_Window.getSize().y);
-    float gameRatio = static_cast<float>(config.width) / static_cast<float>(config.height);
 
     if (screenRatio >= gameRatio)
     {
@@ -57,33 +53,20 @@ void Game::InitWindow(const GameConfig &config)
 
     m_Window.setView(view);
 
-    if (config.vsync)
-    {
-        m_Window.setVerticalSyncEnabled(true);
-    }
-    else
-    {
-        m_Window.setFramerateLimit(config.framerate);
-    }
+    (config.vsync) ? m_Window.setVerticalSyncEnabled(true) : m_Window.setFramerateLimit(config.framerate);
 }
 
 void Game::InitEntities()
 {
-    sf::Vector2f windowSize{m_Window.getView().getSize()};
 
     PlayerParams params;
-    params.viewportSize = windowSize;
+    params.viewportSize = m_Window.getView().getSize();
     m_Player1 = Player(params);
 
     params.playerOne = false;
     m_Player2 = Player(params);
 
-    m_Ball = Ball{20, windowSize};
-}
-
-void Game::Shutdown()
-{
-    m_Window.close();
+    m_Ball = Ball{20, m_Window.getView().getSize()};
 }
 
 void Game::Run()
@@ -113,12 +96,12 @@ void Game::HandleEvents()
 
 void Game::HandleRendering()
 {
-    m_Window.clear(sf::Color::Black);
+    ScoreSystem::DrawScore(m_Window, m_Font);
     m_Window.draw(m_Player1);
     m_Window.draw(m_Player2);
     m_Window.draw(m_Ball);
-    DrawScore();
     m_Window.display();
+    m_Window.clear(sf::Color::Black);
 }
 
 void Game::HandleMovement(float deltaTime)
@@ -131,19 +114,4 @@ void Game::HandleMovement(float deltaTime)
     m_Player2.Move(deltaTime);
 
     m_Ball.HandleScore();
-}
-
-void Game::DrawScore()
-{
-    int Score1 = ScoreSystem::GetScore(1);
-    int Score2 = ScoreSystem::GetScore(2);
-
-    sf::Text text(m_Font, std::format("{} | {}", Score1, Score2), 30);
-    text.setFillColor(sf::Color::White);
-
-    sf::FloatRect textArea = text.getLocalBounds();
-    text.setOrigin({textArea.size.x / 2.0f, textArea.size.y / 2.0f});
-    text.setPosition({m_Window.getView().getSize().x / 2.0f, 40});
-
-    m_Window.draw(text);
 }

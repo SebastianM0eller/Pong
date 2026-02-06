@@ -1,5 +1,7 @@
 #pragma once
-
+#include "SFML/Graphics/Font.hpp"
+#include <SFML/Graphics.hpp>
+#include <X11/X.h>
 #include <iostream>
 
 class ScoreSystem
@@ -27,6 +29,18 @@ class ScoreSystem
 
         std::cerr << "Invalid player number: " << playerNumber << "\n";
         return 0;
+    }
+
+    static void DrawScore(sf::RenderWindow &window, sf::Font font)
+    {
+        sf::Text text(font, std::format("{} | {}", m_PlayerOneScore, m_PlayerTwoScore), 30);
+        text.setFillColor(sf::Color::White);
+
+        sf::FloatRect textArea = text.getLocalBounds();
+        text.setOrigin({textArea.size.x / 2.0f, textArea.size.y / 2.0f});
+        text.setPosition({window.getView().getSize().x / 2.0f, 40});
+
+        window.draw(text);
     }
 
   private:

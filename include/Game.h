@@ -23,19 +23,15 @@ class Game
   private:
     sf::RenderWindow m_Window;
     sf::Font m_Font;
-
     Player m_Player1;
     Player m_Player2;
     Ball m_Ball;
-
     bool m_IsRunning{false};
 
+    void Init(const GameConfig &config);
     void InitWindow(const GameConfig &config);
     void InitEntities();
-    void Shutdown();
     void HandleEvents();
     void HandleRendering();
     void HandleMovement(float deltaTime);
-    void HandleBallPoints();
-    void DrawScore();
 };
