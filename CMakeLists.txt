@@ -23,7 +23,10 @@ target_sources(${PROJECT_NAME} PRIVATE
   source/Ball.cpp
 )
 
-target_link_libraries(${PROJECT_NAME} PUBLIC SFML::Graphics)
+target_link_libraries(${PROJECT_NAME} PUBLIC 
+  SFML::Graphics
+  SFML::Audio
+)
 
 
 

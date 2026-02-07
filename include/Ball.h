@@ -1,5 +1,6 @@
 #pragma once
 #include "Players.h"
+#include <SFML/Graphics.hpp>
 
 class Ball : public sf::RectangleShape
 {

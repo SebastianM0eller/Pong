@@ -1,7 +1,5 @@
 #pragma once
-#include "SFML/Graphics/Font.hpp"
 #include <SFML/Graphics.hpp>
-#include <X11/X.h>
 #include <iostream>
 
 class ScoreSystem
