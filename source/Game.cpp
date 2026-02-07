@@ -1,5 +1,7 @@
 #include "Game.h"
+#include "SFML/Graphics/Text.hpp"
 #include "Score.h"
+#include <format>
 #include <optional>
 
 Game::Game()
@@ -76,14 +78,23 @@ void Game::Run()
 
     while (m_IsRunning)
     {
-        float deltaTime = deltaTimer.restart().asSeconds();
-        HandleEvents();
-        HandleMovement(deltaTime);
-        HandleRendering();
+        if (m_State == GameState::Running)
+        {
+            float deltaTime = deltaTimer.restart().asSeconds();
+            HandleRunningEvents();
+            HandleRunningMovement(deltaTime);
+            HandleRunningRendering();
+            CheckForWinner();
+        }
+        if (m_State == GameState::Winner)
+        {
+            HandleWinnerEvents();
+            HandleWinnerRendering();
+        }
     }
 };
 
-void Game::HandleEvents()
+void Game::HandleRunningEvents()
 {
     while (const std::optional event = m_Window.pollEvent())
     {
@@ -94,7 +105,12 @@ void Game::HandleEvents()
     }
 }
 
-void Game::HandleRendering()
+void Game::HandleWinnerEvents()
+{
+    HandleRunningEvents();
+}
+
+void Game::HandleRunningRendering()
 {
     ScoreSystem::DrawScore(m_Window, m_Font);
     m_Window.draw(m_Player1);
@@ -104,7 +120,21 @@ void Game::HandleRendering()
     m_Window.clear(sf::Color::Black);
 }
 
-void Game::HandleMovement(float deltaTime)
+void Game::HandleWinnerRendering()
+{
+    sf::Text text(m_Font, std::format("{} {}", "The winner is: player ", m_Winner));
+    text.setFillColor(sf::Color::White);
+
+    sf::FloatRect textArea = text.getLocalBounds();
+    text.setOrigin({textArea.size.x / 2.0f, textArea.size.y / 2.0f});
+    text.setPosition(m_Window.getView().getSize() / 2.0f);
+
+    m_Window.draw(text);
+    m_Window.display();
+    m_Window.clear(sf::Color::Black);
+}
+
+void Game::HandleRunningMovement(float deltaTime)
 {
     m_Ball.HandleCollision(m_Player1);
     m_Ball.HandleCollision(m_Player2);
@@ -118,6 +148,15 @@ void Game::HandleMovement(float deltaTime)
 
 void Game::CheckForWinner()
 {
-    if (ScoreSystem::GetScore(1) >= 10 || ScoreSystem::GetScore(2) >= 10)
+    if (ScoreSystem::GetScore(1) >= 10)
+    {
         m_State = GameState::Winner;
+        m_Winner = 1;
+    }
+
+    if (ScoreSystem::GetScore(2) >= 10)
+    {
+        m_State = GameState::Winner;
+        m_Winner = 2;
+    }
 }

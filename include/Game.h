@@ -28,19 +28,32 @@ class Game
     void Run();
 
   private:
-    GameState m_State{GameState::Running}; // Todo: Should start in the menu when implemented.
     sf::RenderWindow m_Window;
     sf::Font m_Font;
     Player m_Player1;
     Player m_Player2;
     Ball m_Ball;
+    GameState m_State{GameState::Running}; // Todo: Should start in the menu when implemented.
+    uint8_t m_Winner;
     bool m_IsRunning{false};
 
+    // Init functions
     void Init(const GameConfig &config);
     void InitWindow(const GameConfig &config);
     void InitEntities();
-    void HandleEvents();
-    void HandleRendering();
-    void HandleMovement(float deltaTime);
+
+    // Options functions
+    // Todo:
+
+    // Running functions
+    void HandleRunningEvents();
+    void HandleRunningRendering();
+    void HandleRunningMovement(float deltaTime);
     void CheckForWinner();
+
+    // Winner functions
+    void HandleWinnerRendering();
+    void HandleWinnerEvents();
+
+    // Todo: Add buttons for quit and go again
 };
