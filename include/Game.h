@@ -11,6 +11,13 @@ struct GameConfig
     bool vsync{true};
 };
 
+enum class GameState
+{
+    MainMenu,
+    Running,
+    Winner
+};
+
 class Game
 {
   public:
@@ -21,6 +28,7 @@ class Game
     void Run();
 
   private:
+    GameState m_State{GameState::Running}; // Todo: Should start in the menu when implemented.
     sf::RenderWindow m_Window;
     sf::Font m_Font;
     Player m_Player1;
@@ -34,4 +42,5 @@ class Game
     void HandleEvents();
     void HandleRendering();
     void HandleMovement(float deltaTime);
+    void CheckForWinner();
 };

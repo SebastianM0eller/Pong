@@ -115,3 +115,9 @@ void Game::HandleMovement(float deltaTime)
 
     m_Ball.HandleScore();
 }
+
+void Game::CheckForWinner()
+{
+    if (ScoreSystem::GetScore(1) >= 10 || ScoreSystem::GetScore(2) >= 10)
+        m_State = GameState::Winner;
+}
