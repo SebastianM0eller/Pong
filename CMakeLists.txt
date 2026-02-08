@@ -21,6 +21,7 @@ target_sources(${PROJECT_NAME} PRIVATE
   source/Game.cpp
   source/Players.cpp
   source/Ball.cpp
+  source/Button.cpp
 )
 
 target_link_libraries(${PROJECT_NAME} PUBLIC 
