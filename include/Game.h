@@ -65,6 +65,8 @@ class Game
     // Winner functions
     void HandleWinnerRendering();
     void HandleWinnerEvents();
+    void QuitGame();
+    void RestartGame();
 
     // Todo: Add buttons for quit and go again
 };

@@ -4,6 +4,8 @@
 #include <optional>
 
 #include "SFML/Graphics/Text.hpp"
+#include "SFML/System/Vector2.hpp"
+#include "SFML/Window/Mouse.hpp"
 #include "Score.h"
 
 Game::Game()
@@ -109,6 +111,7 @@ void Game::Run()
         case (GameState::Winner): {
             HandleWinnerEvents();
             HandleWinnerRendering();
+            deltaTimer.reset();
             continue;
         }
         default:
@@ -135,6 +138,18 @@ void Game::HandleWinnerEvents()
         if (event->is<sf::Event::Closed>())
         {
             m_IsRunning = false;
+        }
+        if (const auto *mouseEvent = event->getIf<sf::Event::MouseButtonPressed>())
+        {
+            if (mouseEvent->button == sf::Mouse::Button::Left)
+            {
+                sf::Vector2f viewCoords = m_Window.mapPixelToCoords(mouseEvent->position);
+
+                if (m_QuitButton.IsClicked(viewCoords))
+                    QuitGame();
+                else if (m_RetryButton.IsClicked(viewCoords))
+                    RestartGame();
+            }
         }
     }
 }
@@ -190,4 +205,21 @@ void Game::CheckForWinner()
         m_State = GameState::Winner;
         m_Winner = 2;
     }
+}
+
+void Game::QuitGame()
+{
+    m_IsRunning = false;
+}
+
+void Game::RestartGame()
+{
+    m_State = GameState::Running;
+
+    m_Ball.Reset();
+
+    m_Player1.move({0, m_Window.getView().getSize().y / 2.0f - m_Player1.getPosition().y});
+    m_Player2.move({0, m_Window.getView().getSize().y / 2.0f - m_Player2.getPosition().y});
+
+    ScoreSystem::Initialize();
 }
