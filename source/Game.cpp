@@ -1,8 +1,10 @@
 #include "Game.h"
-#include "SFML/Graphics/Text.hpp"
-#include "Score.h"
+
 #include <format>
 #include <optional>
+
+#include "SFML/Graphics/Text.hpp"
+#include "Score.h"
 
 Game::Game()
 {
@@ -60,7 +62,6 @@ void Game::InitWindow(const GameConfig &config)
 
 void Game::InitEntities()
 {
-
     PlayerParams params;
     params.viewportSize = m_Window.getView().getSize();
     m_Player1 = Player(params);
@@ -78,18 +79,23 @@ void Game::Run()
 
     while (m_IsRunning)
     {
-        if (m_State == GameState::Running)
+        switch (m_State)
         {
+        case (GameState::MainMenu): {
+            continue;
+        }
+        case (GameState::Running): {
             float deltaTime = deltaTimer.restart().asSeconds();
             HandleRunningEvents();
             HandleRunningMovement(deltaTime);
             HandleRunningRendering();
             CheckForWinner();
+            continue;
         }
-        if (m_State == GameState::Winner)
-        {
+        case (GameState::Winner): {
             HandleWinnerEvents();
             HandleWinnerRendering();
+        }
         }
     }
 };
