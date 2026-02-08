@@ -28,14 +28,22 @@ class Game
     void Run();
 
   private:
+    // Members needed for all states:
     sf::RenderWindow m_Window;
     sf::Font m_Font;
+    GameState m_State{GameState::Running}; // Todo: Should start in the menu when implemented.
+    bool m_IsRunning{false};
+
+    // Members needed for the menu.
+    // Todo:
+
+    // Members needed for Running:
     Player m_Player1;
     Player m_Player2;
     Ball m_Ball;
-    GameState m_State{GameState::Running}; // Todo: Should start in the menu when implemented.
+
+    // Members needed for Winner:
     uint8_t m_Winner;
-    bool m_IsRunning{false};
 
     // Init functions
     void Init(const GameConfig &config);
