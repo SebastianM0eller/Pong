@@ -1,9 +1,11 @@
 #pragma once
+#include "SFML/Graphics/Font.hpp"
 #include "SFML/Graphics/RectangleShape.hpp"
 #include "SFML/Graphics/RenderWindow.hpp"
 #include "SFML/Graphics/Text.hpp"
 #include "SFML/System/Vector2.hpp"
 #include <SFML/Graphics.hpp>
+#include <memory>
 #include <string>
 
 struct ButtonConfig
@@ -17,8 +19,8 @@ struct ButtonConfig
 class Button
 {
   public:
-    Button(const ButtonConfig &config);
     Button() = default;
+    Button(const ButtonConfig &config);
     ~Button() = default;
 
     void Draw(sf::RenderWindow &window);
@@ -26,5 +28,6 @@ class Button
 
   private:
     std::shared_ptr<sf::Text> m_Text{nullptr};
+    std::shared_ptr<sf::Font> m_Font{nullptr}; // Stored as a pointer to enable copy
     sf::RectangleShape m_Box;
 };

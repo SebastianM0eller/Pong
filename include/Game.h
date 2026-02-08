@@ -1,5 +1,6 @@
 #pragma once
 #include "Ball.h"
+#include "Button.h"
 #include "Players.h"
 
 struct GameConfig
@@ -44,6 +45,8 @@ class Game
 
     // Members needed for Winner:
     uint8_t m_Winner;
+    Button m_RetryButton;
+    Button m_QuitButton;
 
     // Init functions
     void Init(const GameConfig &config);

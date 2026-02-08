@@ -19,14 +19,14 @@ Game::Game(const GameConfig &config)
 
 void Game::Init(const GameConfig &config)
 {
-    InitWindow(config);
-    InitEntities();
-    ScoreSystem::Initialize();
-
     if (!m_Font.openFromFile("assets/font/GameFont.ttf"))
     {
         std::cerr << "Failed to load the font" << std::endl;
     }
+
+    InitWindow(config);
+    InitEntities();
+    ScoreSystem::Initialize();
 }
 
 Game::~Game()
@@ -70,6 +70,20 @@ void Game::InitEntities()
     m_Player2 = Player(params);
 
     m_Ball = Ball{20, m_Window.getView().getSize()};
+
+    ButtonConfig quitConfig;
+    quitConfig.text = "Quit Game";
+    quitConfig.font = m_Font;
+    quitConfig.location = {3.0f / 4.0f * m_Window.getView().getSize().x, 2.0f / 3.0f * m_Window.getView().getSize().y};
+    quitConfig.textSize = m_Window.getView().getSize().y / 30;
+    m_QuitButton = Button(quitConfig);
+
+    ButtonConfig retryConfig;
+    retryConfig.text = "Play Again";
+    retryConfig.font = m_Font;
+    retryConfig.location = {1.0f / 4.0f * m_Window.getView().getSize().x, 2.0f / 3.0f * m_Window.getView().getSize().y};
+    retryConfig.textSize = m_Window.getView().getSize().y / 30;
+    m_RetryButton = Button(retryConfig);
 }
 
 void Game::Run()
@@ -95,7 +109,10 @@ void Game::Run()
         case (GameState::Winner): {
             HandleWinnerEvents();
             HandleWinnerRendering();
+            continue;
         }
+        default:
+            continue;
         }
     }
 };
@@ -113,7 +130,13 @@ void Game::HandleRunningEvents()
 
 void Game::HandleWinnerEvents()
 {
-    HandleRunningEvents();
+    while (const std::optional event = m_Window.pollEvent())
+    {
+        if (event->is<sf::Event::Closed>())
+        {
+            m_IsRunning = false;
+        }
+    }
 }
 
 void Game::HandleRunningRendering()
@@ -136,6 +159,8 @@ void Game::HandleWinnerRendering()
     text.setPosition(m_Window.getView().getSize() / 2.0f);
 
     m_Window.draw(text);
+    m_QuitButton.Draw(m_Window);
+    m_RetryButton.Draw(m_Window);
     m_Window.display();
     m_Window.clear(sf::Color::Black);
 }
