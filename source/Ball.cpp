@@ -19,12 +19,12 @@ void Ball::Move(float deltaTime)
 {
     (m_Slow) ? this->move(this->m_Speed * deltaTime * 0.3f) : this->move(this->m_Speed * deltaTime * m_SpeedScale);
 
-    if (this->getPosition().y < 0 && this->m_Speed.y < 0)
+    if ((this->getPosition().y - this->getSize().y / 2.0f) < 0 && this->m_Speed.y < 0)
     {
         this->m_Speed.y *= -1;
         SoundSystem::PlaySound("assets/sounds/sqr_beep.wav");
     }
-    if (this->getPosition().y > m_ViewportSize.y && this->m_Speed.y > 0)
+    if ((this->getPosition().y + this->getSize().y / 2.0f) > m_ViewportSize.y && this->m_Speed.y > 0)
     {
         this->m_Speed.y *= -1;
         SoundSystem::PlaySound("assets/sounds/sqr_beep.wav");
