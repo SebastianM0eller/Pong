@@ -16,7 +16,7 @@ Player::Player(const PlayerParams &config)
 
     this->m_UpKey = (config.playerOne) ? (sf::Keyboard::Key::W) : (sf::Keyboard::Key::I);
     this->m_DownKey = (config.playerOne) ? (sf::Keyboard::Key::S) : (sf::Keyboard::Key::K);
-    this->m_Speed = config.viewportSize.y / 3.0f;
+    this->m_Speed = config.viewportSize.y / 2.0f;
     this->m_ViewportSize = config.viewportSize;
     this->m_IsAI = config.AI;
 }

@@ -11,7 +11,7 @@ Ball::Ball(float size, sf ::Vector2f viewportSize)
     this->setOutlineColor(sf::Color::White);
     this->setOutlineThickness(0.5f);
 
-    this->m_Speed = {viewportSize.x / 2.0f, 0};
+    this->m_Speed = {viewportSize.x / 1.0f, 0};
     this->m_ViewportSize = viewportSize;
 }
 
