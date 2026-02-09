@@ -38,7 +38,7 @@ Game::~Game()
 
 void Game::InitWindow(const GameConfig &config)
 {
-    m_Window.create(sf::VideoMode::getDesktopMode(), config.WindowName, sf::State::Fullscreen);
+    m_Window.create(sf::VideoMode::getDesktopMode(), config.WindowName /*, sf::State::Fullscreen*/);
 
     float screenRatio = (float)m_Window.getSize().x / m_Window.getSize().y;
     float gameRatio = (float)config.width / config.height;
