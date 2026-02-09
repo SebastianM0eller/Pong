@@ -17,7 +17,7 @@ Ball::Ball(float size, sf ::Vector2f viewportSize)
 
 void Ball::Move(float deltaTime)
 {
-    this->move(this->m_Speed * deltaTime);
+    (m_Slow) ? this->move(this->m_Speed * deltaTime * 0.5f) : this->move(this->m_Speed * deltaTime);
 
     if (this->getPosition().y < 0 && this->m_Speed.y < 0)
     {
@@ -34,8 +34,8 @@ void Ball::Move(float deltaTime)
 void Ball::Reset()
 {
     this->setPosition(m_ViewportSize / 2.0f);
-    this->m_Speed.x *= -1;
     this->m_Speed.y *= 0.5;
+    this->m_Slow = true;
 }
 
 void Ball::HandleCollision(const Player &other)
@@ -48,6 +48,7 @@ void Ball::HandleCollision(const Player &other)
             (this->getPosition().y - other.getPosition().y) / other.getSize().y * std::abs(this->m_Speed.x);
 
         SoundSystem::PlaySound("assets/sounds/sqr_beep.wav");
+        this->m_Slow = false;
     }
 }
 
