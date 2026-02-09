@@ -1,4 +1,5 @@
 #include "Players.h"
+#include "SFML/System/Vector2.hpp"
 #include "SFML/Window/Keyboard.hpp"
 
 Player::Player(const PlayerParams &config)
@@ -16,6 +17,12 @@ Player::Player(const PlayerParams &config)
     this->m_DownKey = (config.playerOne) ? (sf::Keyboard::Key::S) : (sf::Keyboard::Key::K);
     this->m_Speed = config.viewportSize.y / 3.0f;
     this->m_ViewportSize = config.viewportSize;
+    this->m_IsAI = config.AI;
+}
+
+void Player::Update(float deltaTime, sf::Vector2f ballPos)
+{
+    (m_IsAI) ? AIMove(deltaTime, ballPos) : Move(deltaTime);
 }
 
 void Player::Move(float deltaTime)
@@ -28,4 +35,12 @@ void Player::Move(float deltaTime)
     {
         this->move({0, m_Speed * deltaTime});
     }
+}
+
+void Player::AIMove(float deltaTime, sf::Vector2f ballPos)
+{
+    sf::Vector2f dir(0, ballPos.y - this->getPosition().y);
+    dir = dir.normalized();
+
+    this->move(dir * deltaTime * m_Speed);
 }

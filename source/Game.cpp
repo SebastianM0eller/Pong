@@ -237,8 +237,8 @@ void Game::HandleRunningMovement(float deltaTime)
     m_Ball.HandleCollision(m_Player2);
 
     m_Ball.Move(deltaTime);
-    m_Player1.Move(deltaTime);
-    m_Player2.Move(deltaTime);
+    m_Player1.Update(deltaTime, m_Ball.getPosition());
+    m_Player2.Update(deltaTime, m_Ball.getPosition());
 
     m_Ball.HandleScore();
 }

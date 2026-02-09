@@ -1,4 +1,5 @@
 #pragma once
+#include "SFML/System/Vector2.hpp"
 #include <SFML/Graphics.hpp>
 
 struct PlayerParams
@@ -8,6 +9,7 @@ struct PlayerParams
     float height{80};
     float clearance{20};
     bool playerOne{true};
+    bool AI{false};
 };
 
 class Player : public sf::RectangleShape
@@ -17,13 +19,15 @@ class Player : public sf::RectangleShape
     Player(const PlayerParams &config);
     ~Player() = default;
 
-    void Move(float deltaTime);
+    void Update(float deltaTime, sf::Vector2f ballPos);
 
   private:
     sf::Keyboard::Key m_UpKey;
     sf::Keyboard::Key m_DownKey;
     sf::Vector2f m_ViewportSize;
     float m_Speed;
+    bool m_IsAI;
 
-    // Todo Fix the collision with the ball, since the location is now in the center, and not top left.
+    void Move(float deltaTime);
+    void AIMove(float deltaTime, sf::Vector2f ballPos);
 };
