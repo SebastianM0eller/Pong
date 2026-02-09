@@ -86,6 +86,23 @@ void Game::InitEntities()
     retryConfig.location = {1.0f / 4.0f * m_Window.getView().getSize().x, 2.0f / 3.0f * m_Window.getView().getSize().y};
     retryConfig.textSize = m_Window.getView().getSize().y / 30;
     m_RetryButton = Button(retryConfig);
+
+    sf::Vector2f Location = {1.0f / 2.0f * m_Window.getView().getSize().x,
+                             2.0f / 5.0f * m_Window.getView().getSize().y};
+
+    ButtonConfig playConfig;
+    playConfig.text = "Play";
+    playConfig.font = m_Font;
+    playConfig.location = {Location};
+    playConfig.textSize = m_Window.getView().getSize().y / 30;
+    m_PlayButton = Button(playConfig);
+
+    ButtonConfig exitConfig;
+    exitConfig.text = "Quit Game";
+    exitConfig.font = m_Font;
+    exitConfig.location = {Location + sf::Vector2f(0, playConfig.textSize * 1.5f)};
+    exitConfig.textSize = playConfig.textSize;
+    m_MainQuitButton = Button(exitConfig);
 }
 
 void Game::Run()
@@ -95,13 +112,16 @@ void Game::Run()
 
     while (m_IsRunning)
     {
+
+        float deltaTime = deltaTimer.restart().asSeconds();
         switch (m_State)
         {
         case (GameState::MainMenu): {
+            HandleMenuEvents();
+            HandleMenuRendering();
             continue;
         }
         case (GameState::Running): {
-            float deltaTime = deltaTimer.restart().asSeconds();
             HandleRunningEvents();
             HandleRunningMovement(deltaTime);
             HandleRunningRendering();
@@ -111,7 +131,6 @@ void Game::Run()
         case (GameState::Winner): {
             HandleWinnerEvents();
             HandleWinnerRendering();
-            deltaTimer.reset();
             continue;
         }
         default:
@@ -120,13 +139,37 @@ void Game::Run()
     }
 };
 
+void Game::HandleMenuEvents()
+{
+    while (const std::optional event = m_Window.pollEvent())
+    {
+        if (event->is<sf::Event::Closed>())
+        {
+            QuitGame();
+        }
+
+        if (const auto *mouseEvent = event->getIf<sf::Event::MouseButtonPressed>())
+        {
+            if (mouseEvent->button == sf::Mouse::Button::Left)
+            {
+                sf::Vector2f viewCoords = m_Window.mapPixelToCoords(mouseEvent->position);
+
+                if (m_MainQuitButton.IsClicked(viewCoords))
+                    QuitGame();
+                else if (m_PlayButton.IsClicked(viewCoords))
+                    RestartGame();
+            }
+        }
+    }
+}
+
 void Game::HandleRunningEvents()
 {
     while (const std::optional event = m_Window.pollEvent())
     {
         if (event->is<sf::Event::Closed>())
         {
-            m_IsRunning = false;
+            QuitGame();
         }
     }
 }
@@ -137,7 +180,7 @@ void Game::HandleWinnerEvents()
     {
         if (event->is<sf::Event::Closed>())
         {
-            m_IsRunning = false;
+            QuitGame();
         }
         if (const auto *mouseEvent = event->getIf<sf::Event::MouseButtonPressed>())
         {
@@ -152,6 +195,14 @@ void Game::HandleWinnerEvents()
             }
         }
     }
+}
+
+void Game::HandleMenuRendering()
+{
+    m_PlayButton.Draw(m_Window);
+    m_MainQuitButton.Draw(m_Window);
+    m_Window.display();
+    m_Window.clear(sf::Color::Black);
 }
 
 void Game::HandleRunningRendering()

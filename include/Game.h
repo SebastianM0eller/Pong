@@ -32,11 +32,12 @@ class Game
     // Members needed for all states:
     sf::RenderWindow m_Window;
     sf::Font m_Font;
-    GameState m_State{GameState::Running}; // Todo: Should start in the menu when implemented.
+    GameState m_State{GameState::MainMenu};
     bool m_IsRunning{false};
 
     // Members needed for the menu.
-    // Todo:
+    Button m_PlayButton;
+    Button m_MainQuitButton;
 
     // Members needed for Running:
     Player m_Player1;
@@ -53,8 +54,12 @@ class Game
     void InitWindow(const GameConfig &config);
     void InitEntities();
 
+    void QuitGame();
+
     // Options functions
-    // Todo:
+    void StartGame();
+    void HandleMenuEvents();
+    void HandleMenuRendering();
 
     // Running functions
     void HandleRunningEvents();
@@ -65,7 +70,6 @@ class Game
     // Winner functions
     void HandleWinnerRendering();
     void HandleWinnerEvents();
-    void QuitGame();
     void RestartGame();
 
     // Todo: Add buttons for quit and go again
