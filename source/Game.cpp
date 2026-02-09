@@ -284,6 +284,7 @@ void Game::QuitGame()
 void Game::QuitToMenu()
 {
     m_State = GameState::MainMenu;
+    ScoreSystem::Initialize();
 }
 
 void Game::RestartGame()
