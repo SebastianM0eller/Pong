@@ -1,11 +1,4 @@
 #include "Game.h"
-
-#include <format>
-#include <optional>
-
-#include "SFML/Graphics/Text.hpp"
-#include "SFML/System/Vector2.hpp"
-#include "SFML/Window/Mouse.hpp"
 #include "Score.h"
 
 Game::Game()
@@ -121,29 +114,28 @@ void Game::Run()
 
     while (m_IsRunning)
     {
-
         float deltaTime = deltaTimer.restart().asSeconds();
         switch (m_State)
         {
         case (GameState::MainMenu): {
             HandleMenuEvents();
             HandleMenuRendering();
-            continue;
+            break;
         }
         case (GameState::Running): {
             HandleRunningEvents();
             HandleRunningMovement(deltaTime);
             HandleRunningRendering();
             CheckForWinner();
-            continue;
+            break;
         }
         case (GameState::Winner): {
             HandleWinnerEvents();
             HandleWinnerRendering();
-            continue;
+            break;
         }
         default:
-            continue;
+            break;
         }
     }
 };
