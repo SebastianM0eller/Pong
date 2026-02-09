@@ -72,6 +72,7 @@ class Game
     void HandleWinnerRendering();
     void HandleWinnerEvents();
     void RestartGame();
+    void QuitToMenu();
 
     // Todo: Add buttons for quit and go again
 };

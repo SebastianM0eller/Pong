@@ -76,7 +76,7 @@ void Game::InitEntities(bool singlePlayer)
     m_Ball = Ball{20, m_Window.getView().getSize()};
 
     ButtonConfig quitConfig;
-    quitConfig.text = "Quit Game";
+    quitConfig.text = "Quit To Menu";
     quitConfig.font = m_Font;
     quitConfig.location = {3.0f / 4.0f * m_Window.getView().getSize().x, 2.0f / 3.0f * m_Window.getView().getSize().y};
     quitConfig.textSize = m_Window.getView().getSize().y / 30;
@@ -206,7 +206,7 @@ void Game::HandleWinnerEvents()
                 sf::Vector2f viewCoords = m_Window.mapPixelToCoords(mouseEvent->position);
 
                 if (m_QuitButton.IsClicked(viewCoords))
-                    QuitGame();
+                    QuitToMenu();
                 else if (m_RetryButton.IsClicked(viewCoords))
                     RestartGame();
             }
@@ -279,6 +279,11 @@ void Game::CheckForWinner()
 void Game::QuitGame()
 {
     m_IsRunning = false;
+}
+
+void Game::QuitToMenu()
+{
+    m_State = GameState::MainMenu;
 }
 
 void Game::RestartGame()
