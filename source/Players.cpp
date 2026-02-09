@@ -42,7 +42,7 @@ void Player::AIMove(float deltaTime, sf::Vector2f ballPos)
 {
     sf::Vector2f dir(0, ballPos.y - this->getPosition().y);
 
-    float multiplier = ((std::norm(dir.y) - this->getSize().y / 2.0f) < 0) ? dir.y / this->getSize().y : 1;
+    float multiplier = ((std::norm(dir.y) - this->getSize().y / 2.0f) < 0) ? dir.y / this->getSize().y * 2.0f : 1;
 
     if (dir.lengthSquared() != 0)
     {

@@ -102,14 +102,14 @@ void Game::InitEntities(bool singlePlayer)
     ButtonConfig twoPlayer;
     playConfig.text = "2 Player";
     playConfig.font = m_Font;
-    playConfig.location = {Location + sf::Vector2f(0, playConfig.textSize * 1.5f)};
+    playConfig.location = {Location + sf::Vector2f(0, playConfig.textSize * 2.0f)};
     playConfig.textSize = m_Window.getView().getSize().y / 30;
     m_PlayTwoButton = Button(playConfig);
 
     ButtonConfig exitConfig;
     exitConfig.text = "Quit Game";
     exitConfig.font = m_Font;
-    exitConfig.location = {Location + sf::Vector2f(0, playConfig.textSize * 3.0f)};
+    exitConfig.location = {Location + sf::Vector2f(0, playConfig.textSize * 4.0f)};
     exitConfig.textSize = playConfig.textSize;
     m_MainQuitButton = Button(exitConfig);
 }
