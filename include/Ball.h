@@ -17,5 +17,6 @@ class Ball : public sf::RectangleShape
   private:
     sf::Vector2f m_Speed;
     sf::Vector2f m_ViewportSize;
+    float m_SpeedScale{1};
     bool m_Slow{false};
 };
