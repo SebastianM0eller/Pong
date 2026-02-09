@@ -27,7 +27,7 @@ void Game::Init(const GameConfig &config)
     }
 
     InitWindow(config);
-    InitEntities();
+    InitEntities(false);
     ScoreSystem::Initialize();
 }
 
@@ -62,13 +62,15 @@ void Game::InitWindow(const GameConfig &config)
     (config.vsync) ? m_Window.setVerticalSyncEnabled(true) : m_Window.setFramerateLimit(config.framerate);
 }
 
-void Game::InitEntities()
+void Game::InitEntities(bool singlePlayer)
 {
     PlayerParams params;
     params.viewportSize = m_Window.getView().getSize();
     m_Player1 = Player(params);
 
     params.playerOne = false;
+    if (singlePlayer)
+        params.AI = true;
     m_Player2 = Player(params);
 
     m_Ball = Ball{20, m_Window.getView().getSize()};
@@ -91,16 +93,23 @@ void Game::InitEntities()
                              2.0f / 5.0f * m_Window.getView().getSize().y};
 
     ButtonConfig playConfig;
-    playConfig.text = "Play";
+    playConfig.text = "1 Player";
     playConfig.font = m_Font;
     playConfig.location = {Location};
     playConfig.textSize = m_Window.getView().getSize().y / 30;
-    m_PlayButton = Button(playConfig);
+    m_PlayOneButton = Button(playConfig);
+
+    ButtonConfig twoPlayer;
+    playConfig.text = "2 Player";
+    playConfig.font = m_Font;
+    playConfig.location = {Location + sf::Vector2f(0, playConfig.textSize * 1.5f)};
+    playConfig.textSize = m_Window.getView().getSize().y / 30;
+    m_PlayTwoButton = Button(playConfig);
 
     ButtonConfig exitConfig;
     exitConfig.text = "Quit Game";
     exitConfig.font = m_Font;
-    exitConfig.location = {Location + sf::Vector2f(0, playConfig.textSize * 1.5f)};
+    exitConfig.location = {Location + sf::Vector2f(0, playConfig.textSize * 3.0f)};
     exitConfig.textSize = playConfig.textSize;
     m_MainQuitButton = Button(exitConfig);
 }
@@ -156,8 +165,16 @@ void Game::HandleMenuEvents()
 
                 if (m_MainQuitButton.IsClicked(viewCoords))
                     QuitGame();
-                else if (m_PlayButton.IsClicked(viewCoords))
-                    RestartGame();
+                else if (m_PlayOneButton.IsClicked(viewCoords))
+                {
+                    InitEntities(true);
+                    m_State = GameState::Running;
+                }
+                else if (m_PlayTwoButton.IsClicked(viewCoords))
+                {
+                    InitEntities(false);
+                    m_State = GameState::Running;
+                }
             }
         }
     }
@@ -199,7 +216,8 @@ void Game::HandleWinnerEvents()
 
 void Game::HandleMenuRendering()
 {
-    m_PlayButton.Draw(m_Window);
+    m_PlayOneButton.Draw(m_Window);
+    m_PlayTwoButton.Draw(m_Window);
     m_MainQuitButton.Draw(m_Window);
     m_Window.display();
     m_Window.clear(sf::Color::Black);

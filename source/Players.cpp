@@ -1,6 +1,7 @@
 #include "Players.h"
 #include "SFML/System/Vector2.hpp"
 #include "SFML/Window/Keyboard.hpp"
+#include <complex>
 
 Player::Player(const PlayerParams &config)
 {
@@ -40,7 +41,12 @@ void Player::Move(float deltaTime)
 void Player::AIMove(float deltaTime, sf::Vector2f ballPos)
 {
     sf::Vector2f dir(0, ballPos.y - this->getPosition().y);
-    dir = dir.normalized();
 
-    this->move(dir * deltaTime * m_Speed);
+    float multiplier = ((std::norm(dir.y) - this->getSize().y / 2.0f) < 0) ? dir.y / this->getSize().y : 1;
+
+    if (dir.lengthSquared() != 0)
+    {
+        dir = dir.normalized() * std::norm(multiplier);
+        this->move(dir * deltaTime * m_Speed);
+    }
 }

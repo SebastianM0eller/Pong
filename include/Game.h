@@ -36,7 +36,8 @@ class Game
     bool m_IsRunning{false};
 
     // Members needed for the menu.
-    Button m_PlayButton;
+    Button m_PlayOneButton;
+    Button m_PlayTwoButton;
     Button m_MainQuitButton;
 
     // Members needed for Running:
@@ -52,7 +53,7 @@ class Game
     // Init functions
     void Init(const GameConfig &config);
     void InitWindow(const GameConfig &config);
-    void InitEntities();
+    void InitEntities(bool SinglePlayer);
 
     void QuitGame();
 
