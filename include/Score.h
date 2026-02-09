@@ -31,7 +31,7 @@ class ScoreSystem
 
     static void DrawScore(sf::RenderWindow &window, sf::Font font)
     {
-        sf::Text text(font, std::format("{} | {}", m_PlayerOneScore, m_PlayerTwoScore), 30);
+        sf::Text text(font, std::format("{}           {}", m_PlayerOneScore, m_PlayerTwoScore), 30);
         text.setFillColor(sf::Color::White);
 
         sf::FloatRect textArea = text.getLocalBounds();
