@@ -7,7 +7,9 @@
 class SoundSystem {
        public:
         ///
-        ///
+        /// Plays the sound from the specified sourcePath.
+        /// If it fails to load the buffer from the specified sourcePath
+        /// it throws a runtime_error.
         ///
         static void PlaySound(const std::string& sourcePath) {
                 sf::SoundBuffer& buffer = GetBuffer(sourcePath);
@@ -16,8 +18,10 @@ class SoundSystem {
                 m_ActiveSounds.back().play();
         }
 
+        ///
+        /// Deletes sounds that have finished playing.
+        ///
         static void Update() {
-                // Remove the sound if it has finished playing.
                 m_ActiveSounds.remove_if(
                     [](const sf::Sound& s) { return s.getStatus() == sf::Sound::Status::Stopped; });
         }
@@ -26,6 +30,10 @@ class SoundSystem {
         SoundSystem() = default;
         ~SoundSystem() = default;
 
+        ///
+        /// Retrieves a buffer based on the specified sourcePath.
+        /// If it fails to generate the buffer, it throws a runtime_error.
+        ///
         static sf::SoundBuffer& GetBuffer(const std::string& sourcePath) {
                 auto it = m_Buffers.find(sourcePath);
                 if (it != m_Buffers.end()) return it->second;
