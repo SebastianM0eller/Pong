@@ -5,8 +5,8 @@
 class Ball : public sf::RectangleShape
 {
   public:
-    Ball() = default;
     Ball(float size, sf::Vector2f viewportSize);
+    Ball() = default;
     ~Ball() = default;
 
     void Move(float deltaTime);
