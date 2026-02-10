@@ -4,6 +4,12 @@
 #include <stdexcept>
 #include <unordered_map>
 
+class GameSound : public sf::Sound {
+       public:
+        using sf::Sound::Sound;  // For the constructor
+        sf::Clock lifeTime;
+};
+
 class SoundSystem {
        public:
         ///
@@ -22,8 +28,10 @@ class SoundSystem {
         /// Deletes sounds that have finished playing.
         ///
         static void Update() {
-                m_ActiveSounds.remove_if(
-                    [](const sf::Sound& s) { return s.getStatus() == sf::Sound::Status::Stopped; });
+                m_ActiveSounds.remove_if([](const GameSound& s) {
+                        return (s.getStatus() == sf::Sound::Status::Stopped &&
+                                s.lifeTime.getElapsedTime().asSeconds() > 0.1f);
+                });
         }
 
        private:
@@ -47,5 +55,5 @@ class SoundSystem {
         }
 
         static inline std::unordered_map<std::string, sf::SoundBuffer> m_Buffers;
-        static inline std::list<sf::Sound> m_ActiveSounds;
+        static inline std::list<GameSound> m_ActiveSounds;
 };
