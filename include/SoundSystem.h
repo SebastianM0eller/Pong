@@ -29,7 +29,7 @@ class SoundSystem {
         /// The lifeTime is checked to avoid instant deletes
         /// resulting in the sound not being played
         ///
-        static void Update() noexcept {
+        static void Update() {
                 m_ActiveSounds.remove_if([](const GameSound& s) {
                         return (s.getStatus() == sf::Sound::Status::Stopped &&
                                 s.lifeTime.getElapsedTime().asSeconds() > 0.1f);

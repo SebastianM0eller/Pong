@@ -9,8 +9,8 @@ class Ball : public sf::RectangleShape {
 
         void Move(float deltaTime);
         void HandleCollision(const Player& other);
-        void HandleScore() noexcept;
-        void Reset() noexcept;
+        void HandleScore();
+        void Reset();
 
        private:
         sf::Vector2f m_Speed;

@@ -64,7 +64,7 @@ void Ball::HandleCollision(const Player& other) {
 /// Checks if the ball has scored a goal.
 /// If a goal is scored, the score for that player in incremented based on the ScoreSystem.
 ///
-void Ball::HandleScore() noexcept {
+void Ball::HandleScore() {
         if (this->getPosition().x < 0) {
                 ScoreSystem::AddScore(2);
                 this->Reset();
@@ -81,7 +81,7 @@ void Ball::HandleScore() noexcept {
 /// It also applies the internal 'm_Slow' flag to the ball, and halfs the vertical speed of the ball.
 /// The function is intended to be called, when a goal is scored.
 ///
-void Ball::Reset() noexcept {
+void Ball::Reset() {
         this->setPosition(m_ViewportSize / 2.0f);
         this->m_Speed.y *= 0.5;
         this->m_Slow = true;
