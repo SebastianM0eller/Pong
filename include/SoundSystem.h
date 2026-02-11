@@ -26,7 +26,8 @@ class SoundSystem {
 
         ///
         /// Deletes sounds that have finished playing.
-        /// The lifeTime is checked to avoid instant deletes resulting in the sound not being played
+        /// The lifeTime is checked to avoid instant deletes
+        /// resulting in the sound not being played
         ///
         static void Update() {
                 m_ActiveSounds.remove_if([](const GameSound& s) {
