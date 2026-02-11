@@ -6,8 +6,8 @@
 
 class GameSound : public sf::Sound {
        public:
-        using sf::Sound::Sound;  // For the constructor
-        sf::Clock lifeTime;
+        using sf::Sound::Sound;  // For the constructor.
+        sf::Clock lifeTime;      // To track the lifeTime.
 };
 
 class SoundSystem {
@@ -29,7 +29,7 @@ class SoundSystem {
         /// The lifeTime is checked to avoid instant deletes
         /// resulting in the sound not being played
         ///
-        static void Update() {
+        static void Update() noexcept {
                 m_ActiveSounds.remove_if([](const GameSound& s) {
                         return (s.getStatus() == sf::Sound::Status::Stopped &&
                                 s.lifeTime.getElapsedTime().asSeconds() > 0.1f);

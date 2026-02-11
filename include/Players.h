@@ -10,8 +10,8 @@ struct PlayerParams {
 
 class Player : public sf::RectangleShape {
        public:
-        Player() = default;
         Player(const PlayerParams& config);
+        Player() = default;
         ~Player() = default;
 
         void Update(float deltaTime, sf::Vector2f ballPos);
