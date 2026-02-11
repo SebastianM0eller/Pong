@@ -14,7 +14,7 @@ class Player : public sf::RectangleShape {
         Player() = default;
         ~Player() = default;
 
-        void Update(float deltaTime, sf::Vector2f ballPos) noexcept;
+        void Update(float deltaTime, sf::Vector2f ballPos);
 
        private:
         sf::Keyboard::Key m_UpKey;
@@ -23,6 +23,6 @@ class Player : public sf::RectangleShape {
         float m_Speed;
         bool m_IsAI;
 
-        void Move(float deltaTime) noexcept;
-        void AIMove(float deltaTime, sf::Vector2f ballPos) noexcept;
+        void Move(float deltaTime);
+        void AIMove(float deltaTime, sf::Vector2f ballPos);
 };
