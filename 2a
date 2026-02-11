@@ -44,14 +44,15 @@ void Player::Move(float deltaTime) {
 /// ballPos is the position of the ball as the screen coords.
 ///
 void Player::AIMove(float deltaTime, sf::Vector2f ballPos) {
-        sf::Vector2f movementDirection(0, ballPos.y - this->getPosition().y);
+        float verticalDistance{ballPos.y - this->getPosition().y};
+        float movementDistance{
+            (std::abs(verticalDistance) - this->getSize().y / 2.0f) ? verticalDistance / this->getSize().y* 2.0f : 1}
 
-        float multiplier = ((std::abs(movementDirection.y) - this->getSize().y / 2.0f) < 0)
-                               ? movementDirection.y / this->getSize().y * 2.0f
-                               : 1;
+        float multiplier =
+            ((std::abs(verticalDistance.y) - this->getSize().y / 2.0f) < 0) ? dir.y / this->getSize().y * 2.0f : 1;
 
-        if (movementDirection.lengthSquared() != 0) {
-                movementDirection = movementDirection.normalized() * std::abs(multiplier);
-                this->move(movementDirection * deltaTime * m_Speed);
+        if (verticalDistance.lengthSquared() != 0) {
+                verticalDistance = dir.normalized() * std::abs(multiplier);
+                this->move(verticalDistance * deltaTime * m_Speed);
         }
 }
