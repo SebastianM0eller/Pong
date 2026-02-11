@@ -2,10 +2,10 @@
 #include <SFML/Graphics.hpp>
 
 struct PlayerParams {
-        sf::Vector2f viewportSize;
-        sf::Vector2f size{20, 80};
-        bool playerOne{true};
-        bool AI{false};
+        sf::Vector2f viewportSize;  // The size of the windows viewport.
+        sf::Vector2f size{20, 80};  // The size of the player.
+        bool playerOne{true};       // True of playerOne, and false if playerTwo.
+        bool AI{false};             // True of controlled by the simple AI.
 };
 
 class Player : public sf::RectangleShape {
