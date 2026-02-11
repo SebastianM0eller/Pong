@@ -16,11 +16,17 @@ class Button {
         Button() = default;
         ~Button() = default;
 
+        Button(Button&&) noexcept = default;
+        Button& operator=(Button&&) noexcept = default;
+
+        Button(const Button&) = delete;
+        Button& operator=(Button&) = delete;
+
         void Draw(sf::RenderWindow& window);
         bool IsClicked(sf::Vector2f mousePos);
 
        private:
-        std::shared_ptr<sf::Text> m_Text{nullptr};
-        std::shared_ptr<sf::Font> m_Font{nullptr};  // Stored as a pointer to enable copy
+        std::unique_ptr<sf::Text> m_Text{nullptr};
+        std::unique_ptr<sf::Font> m_Font{nullptr};  // Stored as a pointer to enable default construction
         sf::RectangleShape m_Box;
 };
