@@ -3,76 +3,68 @@
 #include "Button.h"
 #include "Players.h"
 
-struct GameConfig
-{
-    const char *WindowName{"SFML Window"};
-    uint16_t width{800};
-    uint16_t height{600};
-    uint16_t framerate{60};
-    bool vsync{true};
+struct GameConfig {
+        const char* WindowName{"SFML Window"};  // The name of the Window
+        sf::Vector2i WindowSize{800, 600};      // The windows viewport size
+        uint16_t framerate{60};                 // The max refreshrate *overridden by the vsync.
+        bool vsync{true};                       // True if vsync should be enabled.
 };
 
-enum class GameState
-{
-    MainMenu,
-    Running,
-    Winner
-};
+enum class GameState { MainMenu, Running, Winner };
 
-class Game
-{
-  public:
-    Game();
-    Game(const GameConfig &config);
-    ~Game();
+class Game {
+       public:
+        Game(const GameConfig& config);
+        Game();
+        ~Game();
 
-    void Run();
+        void Run();
 
-  private:
-    // Members needed for all states:
-    sf::RenderWindow m_Window;
-    sf::Font m_Font;
-    GameState m_State{GameState::MainMenu};
-    bool m_IsRunning{false};
+       private:
+        // Members needed for all states:
+        sf::RenderWindow m_Window;
+        sf::Font m_Font;
+        GameState m_State{GameState::MainMenu};
+        bool m_IsRunning{false};
 
-    // Members needed for the menu.
-    Button m_PlayOneButton;
-    Button m_PlayTwoButton;
-    Button m_MainQuitButton;
+        // Members needed for the menu.
+        Button m_PlayOneButton;
+        Button m_PlayTwoButton;
+        Button m_MainQuitButton;
 
-    // Members needed for Running:
-    Player m_Player1;
-    Player m_Player2;
-    Ball m_Ball;
+        // Members needed for Running:
+        Player m_Player1;
+        Player m_Player2;
+        Ball m_Ball;
 
-    // Members needed for Winner:
-    uint8_t m_Winner;
-    Button m_RetryButton;
-    Button m_QuitButton;
+        // Members needed for Winner:
+        uint8_t m_Winner;
+        Button m_RetryButton;
+        Button m_QuitButton;
 
-    // Init functions
-    void Init(const GameConfig &config);
-    void InitWindow(const GameConfig &config);
-    void InitEntities(bool SinglePlayer);
+        // Init functions
+        void Init(const GameConfig& config);
+        void InitWindow(const GameConfig& config);
 
-    void QuitGame();
+        void QuitGame();
 
-    // Options functions
-    void StartGame();
-    void HandleMenuEvents();
-    void HandleMenuRendering();
+        // Options functions
+        void StartGame();
+        void HandleMenuEvents();
+        void HandleMenuRendering();
+        void InitMenu();
 
-    // Running functions
-    void HandleRunningEvents();
-    void HandleRunningRendering();
-    void HandleRunningMovement(float deltaTime);
-    void CheckForWinner();
+        // Running functions
+        void HandleRunningEvents();
+        void HandleRunningRendering();
+        void HandleRunningMovement(float deltaTime);
+        void CheckForWinner();
+        void InitRunning(const bool SinglePlayer);
 
-    // Winner functions
-    void HandleWinnerRendering();
-    void HandleWinnerEvents();
-    void RestartGame();
-    void QuitToMenu();
-
-    // Todo: Add buttons for quit and go again
+        // Winner functions
+        void HandleWinnerRendering();
+        void HandleWinnerEvents();
+        void RestartGame();
+        void QuitToMenu();
+        void InitWinner();
 };

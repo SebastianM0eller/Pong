@@ -1,34 +1,52 @@
 #include "Game.h"
 
+#include <stdexcept>
+
+#include "SFML/System/Vector2.hpp"
 #include "Score.h"
 #include "SoundSystem.h"
-#include "iostream"
 
+///
+///  Constructs a new Game, based on the default GameConfig.
+///  Throws a runtime_error if Initialization fails.
+///
 Game::Game() {
         GameConfig config;
         Init(config);
 }
 
+///
+/// Constructs a new Game, based on the specified GameConfig.
+/// Throws a runtime_error if Initialization fails.
+///
 Game::Game(const GameConfig& config) { Init(config); }
 
+///
+/// Initialize the different things, needed for the game.
+/// If it fails to load the font, it throws a runtime_error.
+///
 void Game::Init(const GameConfig& config) {
+        // Load the font first, as it's used for the entities.
         if (!m_Font.openFromFile("assets/font/GameFont.ttf")) {
-                std::cerr << "Failed to load the font" << std::endl;
+                throw std::runtime_error("Failed to load the font");
         }
 
-        InitWindow(config);
-        InitEntities(false);
         ScoreSystem::Initialize();
+        InitWindow(config);
+        InitMenu();  // We init the menu, as it's the default state.
 }
 
+///
+///
+///
 Game::~Game() { m_Window.close(); }
 
 void Game::InitWindow(const GameConfig& config) {
         m_Window.create(sf::VideoMode::getDesktopMode(), config.WindowName /*, sf::State::Fullscreen*/);
 
         float screenRatio = (float)m_Window.getSize().x / m_Window.getSize().y;
-        float gameRatio = (float)config.width / config.height;
-        sf::View view(sf::FloatRect({0, 0}, {(float)config.width, (float)config.height}));
+        float gameRatio = (float)config.WindowSize.x / config.WindowSize.y;
+        sf::View view(sf::FloatRect({0, 0}, static_cast<sf::Vector2f>(config.WindowSize)));
 
         if (screenRatio >= gameRatio) {
                 float width = gameRatio / screenRatio;
@@ -45,56 +63,36 @@ void Game::InitWindow(const GameConfig& config) {
         (config.vsync) ? m_Window.setVerticalSyncEnabled(true) : m_Window.setFramerateLimit(config.framerate);
 }
 
-void Game::InitEntities(bool singlePlayer) {
-        PlayerParams params;
-        params.viewportSize = m_Window.getView().getSize();
-        m_Player1 = Player(params);
-
-        params.playerOne = false;
-        if (singlePlayer) params.AI = true;
-        m_Player2 = Player(params);
-
-        m_Ball = Ball{20, m_Window.getView().getSize()};
-
-        ButtonConfig quitConfig;
-        quitConfig.text = "Quit To Menu";
-        quitConfig.font = m_Font;
-        quitConfig.location = {3.0f / 4.0f * m_Window.getView().getSize().x,
-                               2.0f / 3.0f * m_Window.getView().getSize().y};
-        quitConfig.textSize = m_Window.getView().getSize().y / 30;
-        m_QuitButton = Button(quitConfig);
-
-        ButtonConfig retryConfig;
-        retryConfig.text = "Play Again";
-        retryConfig.font = m_Font;
-        retryConfig.location = {1.0f / 4.0f * m_Window.getView().getSize().x,
-                                2.0f / 3.0f * m_Window.getView().getSize().y};
-        retryConfig.textSize = m_Window.getView().getSize().y / 30;
-        m_RetryButton = Button(retryConfig);
-
-        sf::Vector2f Location = {1.0f / 2.0f * m_Window.getView().getSize().x,
+void Game::InitMenu() {
+        sf::Vector2f location = {1.0f / 2.0f * m_Window.getView().getSize().x,
                                  2.0f / 5.0f * m_Window.getView().getSize().y};
 
-        ButtonConfig playConfig;
-        playConfig.text = "1 Player";
-        playConfig.font = m_Font;
-        playConfig.location = {Location};
-        playConfig.textSize = m_Window.getView().getSize().y / 30;
-        m_PlayOneButton = Button(playConfig);
+        uint8_t fontSize = m_Window.getView().getSize().y / 30;
 
-        ButtonConfig twoPlayer;
-        playConfig.text = "2 Player";
-        playConfig.font = m_Font;
-        playConfig.location = {Location + sf::Vector2f(0, playConfig.textSize * 2.0f)};
-        playConfig.textSize = m_Window.getView().getSize().y / 30;
-        m_PlayTwoButton = Button(playConfig);
+        m_PlayOneButton = Button({"Single Player", m_Font, location, fontSize});
+        m_PlayTwoButton = Button({"Two Player", m_Font, {location.x, location.y + fontSize * 2.0f}, fontSize});
+        m_MainQuitButton = Button({"Quit Game", m_Font, {location.x, location.y + fontSize * 4.0f}, fontSize});
+}
 
-        ButtonConfig exitConfig;
-        exitConfig.text = "Quit Game";
-        exitConfig.font = m_Font;
-        exitConfig.location = {Location + sf::Vector2f(0, playConfig.textSize * 4.0f)};
-        exitConfig.textSize = playConfig.textSize;
-        m_MainQuitButton = Button(exitConfig);
+void Game::InitRunning(const bool singlePlayer) {
+        sf::Vector2f viewportSize = m_Window.getView().getSize();
+
+        m_Player1 = Player({viewportSize, {20, 80}, true, false});
+        m_Player2 = Player({viewportSize, {20, 80}, false, singlePlayer});
+
+        m_Ball = Ball(20, viewportSize);
+}
+
+void Game::InitWinner() {
+        sf::Vector2f viewportSize = m_Window.getView().getSize();
+
+        sf::Vector2f retryLocation = {1.0f / 4.0f * viewportSize.x, 2.0f / 3.0f * viewportSize.y};
+        sf::Vector2f quitLocation = {3.0f / 4.0f * viewportSize.x, 2.0f / 3.0f * viewportSize.y};
+
+        uint8_t fontSize = m_Window.getView().getSize().y / 30;
+
+        m_RetryButton = Button({"Play Again", m_Font, retryLocation, fontSize});
+        m_QuitButton = Button({"Quit to Menu", m_Font, quitLocation, fontSize});
 }
 
 void Game::Run() {
@@ -142,10 +140,10 @@ void Game::HandleMenuEvents() {
                                 if (m_MainQuitButton.IsClicked(viewCoords))
                                         QuitGame();
                                 else if (m_PlayOneButton.IsClicked(viewCoords)) {
-                                        InitEntities(true);
+                                        InitRunning(true);
                                         m_State = GameState::Running;
                                 } else if (m_PlayTwoButton.IsClicked(viewCoords)) {
-                                        InitEntities(false);
+                                        InitRunning(false);
                                         m_State = GameState::Running;
                                 }
                         }
@@ -226,11 +224,13 @@ void Game::CheckForWinner() {
         if (ScoreSystem::GetScore(1) >= 10) {
                 m_State = GameState::Winner;
                 m_Winner = 1;
+                InitWinner();
         }
 
         if (ScoreSystem::GetScore(2) >= 10) {
                 m_State = GameState::Winner;
                 m_Winner = 2;
+                InitWinner();
         }
 }
 
