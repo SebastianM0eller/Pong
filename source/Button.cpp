@@ -2,6 +2,8 @@
 
 #include <memory>
 
+#include "SFML/System/Vector2.hpp"
+
 ///
 /// Creates a new button, based on the specified ButtonConfig.
 ///
@@ -15,11 +17,13 @@ Button::Button(const ButtonConfig& config) {
         m_Text->setOrigin(ButtonSize.size / 2.0f);
         m_Text->setPosition(config.location);
 
-        m_Box.setSize(ButtonSize.size);
-        m_Box.setOrigin(ButtonSize.size / 2.0f);
+        sf::Vector2f boxBuffer(2, 2);
+        m_Box.setSize(ButtonSize.size + boxBuffer);
+        m_Box.setOrigin((ButtonSize.size + boxBuffer) / 2.0f);
         m_Box.setPosition(config.location);
         m_Box.setFillColor(sf::Color::Transparent);
         m_Box.setOutlineColor(sf::Color::White);
+        m_Box.setOutlineThickness(1.0f);
 }
 
 ///
