@@ -2,7 +2,6 @@
 
 #include <stdexcept>
 
-#include "SFML/System/Vector2.hpp"
 #include "Score.h"
 #include "SoundSystem.h"
 
@@ -32,21 +31,20 @@ void Game::Init(const GameConfig& config) {
         }
 
         ScoreSystem::Initialize();
-        InitWindow(config);
-        InitMenu();  // We init the menu, as it's the default state.
+        InitWindow(config);  // We init the Window before the menu, as it depends on the window size.
+        InitMenu();          // We init the menu, as it's the default state.
 }
 
 ///
+/// Initializes the internal SFML window, with the provided config.
+/// Creates the window view based on the config, and applies the appropriate black bars.
 ///
-///
-Game::~Game() { m_Window.close(); }
-
 void Game::InitWindow(const GameConfig& config) {
         m_Window.create(sf::VideoMode::getDesktopMode(), config.WindowName /*, sf::State::Fullscreen*/);
+        sf::View view(sf::FloatRect({0, 0}, static_cast<sf::Vector2f>(config.WindowSize)));
 
         float screenRatio = (float)m_Window.getSize().x / m_Window.getSize().y;
         float gameRatio = (float)config.WindowSize.x / config.WindowSize.y;
-        sf::View view(sf::FloatRect({0, 0}, static_cast<sf::Vector2f>(config.WindowSize)));
 
         if (screenRatio >= gameRatio) {
                 float width = gameRatio / screenRatio;
@@ -63,6 +61,9 @@ void Game::InitWindow(const GameConfig& config) {
         (config.vsync) ? m_Window.setVerticalSyncEnabled(true) : m_Window.setFramerateLimit(config.framerate);
 }
 
+///
+/// Initializes the members required for the main menu.
+///
 void Game::InitMenu() {
         sf::Vector2f location = {1.0f / 2.0f * m_Window.getView().getSize().x,
                                  2.0f / 5.0f * m_Window.getView().getSize().y};
@@ -74,6 +75,9 @@ void Game::InitMenu() {
         m_MainQuitButton = Button({"Quit Game", m_Font, {location.x, location.y + fontSize * 4.0f}, fontSize});
 }
 
+///
+/// Initializes the members required for the main game.
+///
 void Game::InitRunning(const bool singlePlayer) {
         sf::Vector2f viewportSize = m_Window.getView().getSize();
 
@@ -83,6 +87,9 @@ void Game::InitRunning(const bool singlePlayer) {
         m_Ball = Ball(20, viewportSize);
 }
 
+///
+/// Initializes the members required for the winning menu.
+///
 void Game::InitWinner() {
         sf::Vector2f viewportSize = m_Window.getView().getSize();
 
@@ -95,6 +102,11 @@ void Game::InitWinner() {
         m_QuitButton = Button({"Quit to Menu", m_Font, quitLocation, fontSize});
 }
 
+///
+/// Set m_IsRunning to true, and starts the main game loop.
+/// The loop that runs, depends on the GameState.
+/// At the end of each loop, the SoundSystem::Update() is called, to free memory held by finished sounds.
+///
 void Game::Run() {
         m_IsRunning = true;
         sf::Clock deltaTimer;
@@ -127,6 +139,12 @@ void Game::Run() {
         }
 };
 
+///
+/// Poll and handle the events for the main menu.
+/// It handles the following events:
+/// - Event::Closed -> Stops the main loop by settings m_IsRunning to false.
+/// - Event::MouseButtonPressed -> Checks if one of the buttons is clicked, and if so runs the appropriate methods.
+///
 void Game::HandleMenuEvents() {
         while (const std::optional event = m_Window.pollEvent()) {
                 if (event->is<sf::Event::Closed>()) {
@@ -151,6 +169,11 @@ void Game::HandleMenuEvents() {
         }
 }
 
+///
+/// Poll and handle the events for the main menu.
+/// It handles the following events:
+/// - Event::Closed -> Stops the main loop by settings m_IsRunning to false.
+///
 void Game::HandleRunningEvents() {
         while (const std::optional event = m_Window.pollEvent()) {
                 if (event->is<sf::Event::Closed>()) {
@@ -159,6 +182,12 @@ void Game::HandleRunningEvents() {
         }
 }
 
+///
+/// Poll and handle the events for the main menu.
+/// It handles the following events:
+/// - Event::Closed -> Stops the main loop by settings m_IsRunning to false.
+/// - Event::MouseButtonPressed -> Checks if one of the buttons is clicked, and if so runs the appropriate methods.
+///
 void Game::HandleWinnerEvents() {
         while (const std::optional event = m_Window.pollEvent()) {
                 if (event->is<sf::Event::Closed>()) {
@@ -177,6 +206,10 @@ void Game::HandleWinnerEvents() {
         }
 }
 
+///
+/// Draws the entities in the menu, to the RenderWindow.
+/// Display the entities, and clears the buffer with the color black.
+///
 void Game::HandleMenuRendering() {
         m_PlayOneButton.Draw(m_Window);
         m_PlayTwoButton.Draw(m_Window);
@@ -185,6 +218,10 @@ void Game::HandleMenuRendering() {
         m_Window.clear(sf::Color::Black);
 }
 
+///
+/// Draws the entities in the main game to the RenderWindow.
+/// Swaps buffers, and clears the buffer with the color black.
+///
 void Game::HandleRunningRendering() {
         ScoreSystem::DrawScore(m_Window, m_Font);
         m_Window.draw(m_Player1);
@@ -194,6 +231,10 @@ void Game::HandleRunningRendering() {
         m_Window.clear(sf::Color::Black);
 }
 
+///
+/// Draws the entities and the text from the winning screen to the RenderWindow.
+/// Swaps the buffer for the window, and clears the buffer with the color black.
+///
 void Game::HandleWinnerRendering() {
         sf::Text text(m_Font, std::format("{} {}", "The winner is: player ", m_Winner));
         text.setFillColor(sf::Color::White);
@@ -209,6 +250,10 @@ void Game::HandleWinnerRendering() {
         m_Window.clear(sf::Color::Black);
 }
 
+///
+/// Calls the update methods for the entities in the main game.
+/// Also handle the collision checks.
+///
 void Game::HandleRunningMovement(float deltaTime) {
         m_Ball.HandleCollision(m_Player1);
         m_Ball.HandleCollision(m_Player2);
@@ -216,11 +261,17 @@ void Game::HandleRunningMovement(float deltaTime) {
         m_Ball.Move(deltaTime);
         m_Player1.Update(deltaTime, m_Ball.getPosition());
         m_Player2.Update(deltaTime, m_Ball.getPosition());
-
-        m_Ball.HandleScore();
 }
 
+///
+/// Handles the score for the game.
+/// If the score is large enough for a player to win, the m_State is changed to Winner, and we set the appropriate
+/// m_Winner.
+/// When there is a winner, the Winner entities are also Initialized.
+///
 void Game::CheckForWinner() {
+        m_Ball.HandleScore();
+
         if (ScoreSystem::GetScore(1) >= 10) {
                 m_State = GameState::Winner;
                 m_Winner = 1;
@@ -234,13 +285,22 @@ void Game::CheckForWinner() {
         }
 }
 
+///
+/// Sets m_IsRunning to false
+///
 void Game::QuitGame() { m_IsRunning = false; }
 
+///
+/// Sets the GameState to MainMenu, and resets the score.
+///
 void Game::QuitToMenu() {
         m_State = GameState::MainMenu;
         ScoreSystem::Initialize();
 }
 
+///
+/// Set the GameState to Running, resets the score, and places the ball and players back to their initial state.
+///
 void Game::RestartGame() {
         m_State = GameState::Running;
 

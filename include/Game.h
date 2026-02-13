@@ -5,7 +5,7 @@
 
 struct GameConfig {
         const char* WindowName{"SFML Window"};  // The name of the Window
-        sf::Vector2i WindowSize{800, 600};      // The windows viewport size
+        sf::Vector2u WindowSize{800, 600};      // The windows viewport size
         uint16_t framerate{60};                 // The max refreshrate *overridden by the vsync.
         bool vsync{true};                       // True if vsync should be enabled.
 };
@@ -16,7 +16,7 @@ class Game {
        public:
         Game(const GameConfig& config);
         Game();
-        ~Game();
+        ~Game() = default;
 
         void Run();
 
