@@ -1,7 +1,5 @@
 #include "Game.h"
 
-#include <stdexcept>
-
 #include "Score.h"
 #include "SoundSystem.h"
 
