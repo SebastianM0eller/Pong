@@ -25,7 +25,10 @@ Player::Player(const PlayerParams& config) {
 /// Updates the position of the player based on the given parameters.
 /// The ballPos is needed for the potential AI, to determine the direction to move.
 ///
-void Player::Update(float deltaTime, sf::Vector2f ballPos) { (m_IsAI) ? AIMove(deltaTime, ballPos) : Move(deltaTime); }
+void Player::Update(float deltaTime, sf::Vector2f ballPos) {
+        (m_IsAI) ? AIMove(deltaTime, ballPos) : Move(deltaTime);
+        MoveToBounds();
+}
 
 ///
 /// Moves the player based on the pressed key, and the deltaTime.
@@ -54,4 +57,12 @@ void Player::AIMove(float deltaTime, sf::Vector2f ballPos) {
                 movementDirection = movementDirection.normalized() * std::abs(multiplier);
                 this->move(movementDirection * deltaTime * m_Speed);
         }
+}
+
+///
+/// Moves the player back to bounds, in case it went outside of the screen.
+///
+void Player::MoveToBounds() {
+        if (this->getPosition().y < 0) this->move({0, -this->getPosition().y});
+        if (this->getPosition().y > m_ViewportSize.y) this->move({0, m_ViewportSize.y - this->getPosition().y});
 }

@@ -25,4 +25,5 @@ class Player : public sf::RectangleShape {
 
         void Move(float deltaTime);
         void AIMove(float deltaTime, sf::Vector2f ballPos);
+        void MoveToBounds();
 };
