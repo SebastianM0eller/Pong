@@ -21,12 +21,12 @@ cd Pong
 
 * Build the game using the  appropriate cmake preset.
 ```bash
-cmake --preset release
-
 # If you build for linux:
+cmake --preset release
 cmake --build --preset release
 
 # If you build for Windows:
+cmake --preset windows-release
 cmake --build --preset windows-release
 ```
 
