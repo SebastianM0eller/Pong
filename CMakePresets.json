@@ -32,6 +32,18 @@
         "CMAKE_BUILD_TYPE": "Release",
         "CMAKE_INTERPROCEDURAL_OPTIMIZATION": "ON"
       }
+    },
+    {
+      "name": "windows-release",
+      "displayName": "Windows Release (MinGW)",
+      "description": "Cross-compile for Windows using MinGW",
+      "inherits": "base",
+      "toolchainFile": "${sourceDir}/Toolchain-mingw.cmake",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release",
+        "CMAKE_INTERPROCEDURAL_OPTIMIZATION": "OFF",
+        "CMAKE_EXE_LINKER_FLAGS": "-static"
+      }
     }
   ],
   "buildPresets": [
@@ -42,6 +54,10 @@
     {
       "name": "release",
       "configurePreset": "release"
+    },
+    {
+      "name": "windows-release",
+      "configurePreset": "windows-release"
     }
   ]
 }

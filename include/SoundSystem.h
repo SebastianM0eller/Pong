@@ -1,6 +1,5 @@
 #pragma once
 #include <SFML/Audio.hpp>
-#include <list>
 #include <stdexcept>
 #include <unordered_map>
 
@@ -13,6 +12,23 @@ class GameSound : public sf::Sound {
 class SoundSystem {
        public:
         ///
+        /// Clear the cached sounds and buffers.
+        /// Allocate sounds to avoid stuttering.
+        /// Throws a runtime_error if the internal path is invalid.
+        ///
+        static void Init() {
+                m_ActiveSounds.clear();
+                m_Buffers.clear();
+
+                m_ActiveSounds.reserve(16);
+
+                sf::SoundBuffer& buffer = GetBuffer("assets/sounds/sqr_beep.wav");
+
+                for (int i = 0; i < 16; i++) {
+                        m_ActiveSounds.emplace_back(buffer);
+                }
+        }
+        ///
         /// Plays the sound from the specified sourcePath.
         /// If it fails to load the buffer from the specified sourcePath
         /// it throws a runtime_error.
@@ -20,20 +36,17 @@ class SoundSystem {
         static void PlaySound(const std::string& sourcePath) {
                 sf::SoundBuffer& buffer = GetBuffer(sourcePath);
 
+                for (auto& s : m_ActiveSounds) {
+                        if (s.getStatus() != sf::Sound::Status::Playing &&
+                            s.lifeTime.getElapsedTime().asSeconds() > 0.5f) {
+                                s.setBuffer(buffer);
+                                s.play();
+                                return;
+                        }
+                }
+
                 m_ActiveSounds.emplace_back(buffer);
                 m_ActiveSounds.back().play();
-        }
-
-        ///
-        /// Deletes sounds that have finished playing.
-        /// The lifeTime is checked to avoid instant deletes
-        /// resulting in the sound not being played
-        ///
-        static void Update() {
-                m_ActiveSounds.remove_if([](const GameSound& s) {
-                        return (s.getStatus() == sf::Sound::Status::Stopped &&
-                                s.lifeTime.getElapsedTime().asSeconds() > 0.1f);
-                });
         }
 
        private:
@@ -57,5 +70,5 @@ class SoundSystem {
         }
 
         static inline std::unordered_map<std::string, sf::SoundBuffer> m_Buffers;
-        static inline std::list<GameSound> m_ActiveSounds;
+        static inline std::vector<GameSound> m_ActiveSounds;
 };

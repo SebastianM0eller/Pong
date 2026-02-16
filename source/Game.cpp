@@ -29,6 +29,7 @@ void Game::Init(const GameConfig& config) {
         }
 
         ScoreSystem::Initialize();
+        SoundSystem::Init();
         InitWindow(config);  // We init the Window before the menu, as it depends on the window size.
         InitMenu();          // We init the menu, as it's the default state.
 }
@@ -132,8 +133,6 @@ void Game::Run() {
                         default:
                                 break;
                 }
-
-                SoundSystem::Update();  // Removes the sound that finished playing
         }
 };
 
