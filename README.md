@@ -19,10 +19,15 @@ git clone --recursive https://github.com/SebastianM0eller/Pong
 cd Pong
 ```
 
-* Build the game using the cmake preset.
+* Build the game using the  appropriate cmake preset.
 ```bash
 cmake --preset release
+
+# If you build for linux:
 cmake --build --preset release
+
+# If you build for Windows:
+cmake --build --preset windows-release
 ```
 
 ### How to Play
